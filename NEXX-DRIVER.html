@@ -2096,12 +2096,7 @@ function tampilkanPesananFirebase(order) {
      dipaksa tampil sebagai pesanan aktif.
   */
 
-  if (
-    typeof window.online !== "undefined" &&
-    window.online === false
-  ) {
-    return;
-  }
+  
 
   if (
     typeof window.tampilkanPesanan ===
