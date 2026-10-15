@@ -1989,48 +1989,41 @@ function mulaiPantauPesanan() {
 
         if (
           order &&
-          order.status === "SEARCHING"
+          order.status === "SEARCHING" &&
+          !ditemukan
         ) {
 
-          const kendaraanPesanan =
-            order.vehicle;
+          ditemukan = true;
 
-          const kendaraanDriver =
-            window.kendaraan || "MOTOR";
+          pesananAktifId = child.key;
+          pesananAktif = order;
 
-          const cocok =
-            kendaraanPesanan === "MOBIL" &&
-            kendaraanDriver === "MOBIL"
-              ? true
-              : kendaraanPesanan === "BIKE" &&
-                kendaraanDriver === "MOTOR";
+          console.log(
+            "NEXX: Pesanan ditemukan:",
+            child.key,
+            order
+          );
 
-          if (cocok && !ditemukan) {
-
-            ditemukan = true;
-
-            pesananAktifId = child.key;
-            pesananAktif = order;
-
-            tampilkanPesananFirebase(
-              order
-            );
-          }
-
+          tampilkanPesananFirebase(order);
         }
 
       });
 
       if (!ditemukan) {
+
         pesananAktifId = null;
         pesananAktif = null;
+
+        console.log(
+          "NEXX: Belum ada pesanan SEARCHING."
+        );
       }
 
     },
     (error) => {
 
       console.error(
-        "Firebase Driver:",
+        "NEXX Firebase ERROR:",
         error
       );
 
