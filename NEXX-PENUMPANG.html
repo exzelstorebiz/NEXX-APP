@@ -749,10 +749,23 @@ if (!pickup || !destination) {
   return;
 }
 
-status.textContent =
-  "Pesanan siap diproses! Kendaraan: " +
-  kendaraanDipilih +
-  ". Fitur pengiriman pesanan ke server belum diaktifkan.";
+if (typeof window.kirimPesananKeFirebase !== "function") {
+  status.textContent = "Menghubungkan ke server. Coba lagi sebentar.";
+  return;
+}
+
+status.textContent = "Mengirim pesanan...";
+
+try {
+  await window.kirimPesananKeFirebase({
+    pickup: pickup,
+    destination: destination,
+    vehicle: kendaraanDipilih
+  });
+} catch (error) {
+  console.error(error);
+  status.textContent = "Pesanan gagal dikirim. Silakan coba lagi.";
+}
 }
 </script>
 </body>
