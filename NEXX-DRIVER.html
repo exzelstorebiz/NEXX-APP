@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+
+<meta name="theme-color" content="#090B20">
+<meta name="color-scheme" content="dark">
+
+<title>NEXX DRIVER</title>
+
+<!-- PETA LEAFLET -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+>
+
+<style>
+:root {
+  --bg: #080B1D;
+  --panel: #111633;
+  --panel2: #171D40;
+  --violet: #8B35FF;
+  --violet2: #B54BFF;
+  --orange: #FF8A00;
+  --cyan: #52E5FF;
+  --white: #F7F7FF;
+  --muted: #A5AFD8;
+  --green: #00E676;
+  --red: #FF416C;
+  --border: rgba(145, 88, 255, .30);
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(ellipse at top, #24205B 0%, transparent 48%),
+    var(--bg);
+  color: var(--white);
+  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+  border: none;
+}
+
+button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.app {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  padding-bottom: 100px;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px 17px;
+  background: rgba(8, 11, 29, .94);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.brand-mark {
+  font-size: 30px;
+  font-weight: 1000;
+  letter-spacing: -2px;
+  line-height: 1;
+}
+
+.brand-mark span:first-child {
+  color: var(--white);
+}
+
+.brand-mark span:nth-child(2) {
+  color: var(--violet2);
+}
+
+.brand-mark span:last-child {
+  color: var(--orange);
+}
+
+.brand-subtitle {
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon-button {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--violet), var(--orange));
+  font-size: 20px;
+  border: 2px solid rgba(255,255,255,.3);
+}
+
+/* =========================
+   STATUS DRIVER
+========================= */
+
+.status-card {
+  margin: 15px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(139,53,255,.22), transparent 55%),
+    linear-gradient(145deg, #151A3C, #0E122B);
+  box-shadow: 0 12px 32px rgba(0,0,0,.22);
+}
+
+.status-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.status-label {
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.status-title {
+  font-size: 25px;
+  font-weight: 900;
+  letter-spacing: .5px;
+}
+
+.status-title.online {
+  color: var(--green);
+}
+
+.status-title.offline {
+  color: var(--muted);
+}
+
+.status-desc {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.status-toggle {
+  width: 70px;
+  height: 38px;
+  border-radius: 25px;
+  padding: 4px;
+  background: #343957;
+  border: 1px solid rgba(255,255,255,.12);
+  transition: .25s;
+  flex-shrink: 0;
+}
+
+.status-toggle span {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: white;
+  transition: .25s;
+  box-shadow: 0 2px 8px #0005;
+}
+
+.status-toggle.active {
+  background: #007D4A;
+  box-shadow: 0 0 18px #00E67630;
+}
+
+.status-toggle.active span {
+  transform: translateX(32px);
+  background: var(--green);
+}
+
+.vehicle-title {
+  margin-top: 19px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.vehicle-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.vehicle-button {
+  padding: 12px 8px;
+  border-radius: 15px;
+  background: #0D1230;
+  border: 1px solid #34385D;
+  color: var(--muted);
+  font-weight: bold;
+  font-size: 13px;
+  transition: .2s;
+}
+
+.vehicle-button.selected {
+  color: white;
+  border: 1px solid var(--orange);
+  background: linear-gradient(110deg, #5422A8, #24164C);
+  box-shadow: 0 0 16px #8B35FF24;
+}
+
+.vehicle-button:active {
+  transform: scale(.97);
+}
+
+/* =========================
+   PETA
+========================= */
+
+.map-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 17px 10px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.map-status {
+  font-size: 11px;
+  color: var(--cyan);
+}
+
+.map-wrap {
+  position: relative;
+  margin: 0 12px;
+  height: 340px;
+  border-radius: 23px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #131A35;
+  box-shadow: 0 12px 28px #0004;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+  background: #17213B;
+}
+
+.gps-pill {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(8,11,29,.92);
+  border: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: bold;
+  max-width: calc(100% - 75px);
+}
+
+.gps-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--orange);
+  flex-shrink: 0;
+}
+
+.gps-dot.active {
+  background: var(--green);
+  box-shadow: 0 0 10px var(--green);
+}
+
+.map-tools {
+  position: absolute;
+  right: 11px;
+  top: 65px;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.map-tool {
+  width: 42px;
+  height: 42px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  background: rgba(8,11,29,.94);
+  border: 1px solid var(--border);
+  font-size: 20px;
+  box-shadow: 0 4px 12px #0004;
+}
+
+.map-tool:active {
+  transform: scale(.93);
+}
+
+/* Marker driver */
+
+.driver-marker {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: white;
+  font-size: 22px;
+  background: linear-gradient(135deg, var(--violet), #4B17D8);
+  border: 3px solid white;
+  box-shadow: 0 0 0 7px #8B35FF45, 0 0 22px #8B35FF;
+}
+
+.pickup-marker {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  color: white;
+  background: var(--orange);
+  border: 2px solid white;
+  box-shadow: 0 0 18px #FF8A0080;
+}
+
+.pickup-marker span {
+  transform: rotate(45deg);
+  font-size: 15px;
+}
+
+/* =========================
+   INFORMASI DRIVER
+========================= */
+
+.profile-card {
+  margin: 15px;
+  padding: 17px;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: linear-gradient(145deg, #171C40, #0E122A);
+}
+
+.profile-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-avatar {
+  width: 55px;
+  height: 55px;
+  border-radius: 19px;
+  background: linear-gradient(135deg, var(--violet), var(--orange));
+  display: grid;
+  place-items: center;
+  font-size: 27px;
+  flex-shrink: 0;
+}
+
+.profile-name {
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.profile-subtitle {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+}
+
+.demo-badge {
+  font-size: 9px;
+  color: var(--orange);
+  border: 1px solid #FF8A0060;
+  border-radius: 7px;
+  padding: 4px 6px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 19px;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.stat {
+  text-align: center;
+  border-right: 1px solid var(--border);
+}
+
+.stat:last-child {
+  border-right: none;
+}
+
+.stat strong {
+  display: block;
+  font-size: 18px;
+}
+
+.stat span {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+/* =========================
+   PESANAN MASUK
+========================= */
+
+.order-card {
+  margin: 15px;
+  border-radius: 23px;
+  border: 1px solid rgba(139,53,255,.52);
+  background:
+    radial-gradient(circle at top right, #401A6E55, transparent 55%),
+    linear-gradient(145deg, #151A3B, #0C1028);
+  overflow: hidden;
+  box-shadow: 0 12px 30px #0003;
+}
+
+.order-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.order-heading {
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.demo-timer {
+  font-size: 11px;
+  font-weight: bold;
+  color: #171027;
+  background: linear-gradient(90deg, #FFC247, var(--orange));
+  padding: 8px 11px;
+  border-radius: 10px;
+}
+
+.order-body {
+  padding: 16px;
+}
+
+.passenger-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 17px;
+}
+
+.passenger-avatar {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: linear-gradient(135deg, var(--violet), #4714B6);
+  font-size: 18px;
+}
+
+.passenger-name {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.passenger-rating {
+  color: #FFC247;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.route-point {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 10px;
+  margin-bottom: 17px;
+}
+
+.route-icon {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  margin: 4px;
+  border: 3px solid var(--green);
+  box-shadow: 0 0 12px #00E67635;
+}
+
+.route-icon.destination {
+  border-radius: 4px;
+  border: none;
+  background: var(--orange);
+  transform: rotate(45deg);
+}
+
+.route-label {
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+
+.route-address {
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 1.5;
+}
+
+.route-extra {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.order-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.metric {
+  padding: 12px 10px;
+  border-radius: 15px;
+  background: #0A0F26;
+  border: 1px solid var(--border);
+}
+
+.metric-label {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.metric-value {
+  margin-top: 8px;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.metric-value.orange {
+  color: var(--orange);
+}
+
+.fare-box {
+  padding: 15px;
+  border-radius: 17px;
+  background: linear-gradient(110deg, #3D1B79, #241640);
+  border: 1px solid #A23CFF60;
+  margin-bottom: 15px;
+}
+
+.fare-label {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.fare-value {
+  font-size: 25px;
+  font-weight: 900;
+  color: white;
+  margin-top: 7px;
+}
+
+.fare-note {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 7px;
+}
+
+.order-actions {
+  display: grid;
+  grid-template-columns: .85fr 1.35fr;
+  gap: 10px;
+}
+
+.btn {
+  min-height: 49px;
+  border-radius: 15px;
+  font-size: 13px;
+  font-weight: 900;
+  padding: 12px 8px;
+  transition: .2s;
+}
+
+.btn:active {
+  transform: scale(.97);
+}
+
+.btn-reject {
+  color: #FF6A89;
+  background: #1A102A;
+  border: 1px solid #D82D77;
+}
+
+.btn-primary {
+  color: white;
+  background: linear-gradient(110deg, var(--orange), #EF419E, #7818FF);
+  box-shadow: 0 5px 18px #8B35FF35;
+}
+
+.btn-success {
+  color: #041A11;
+  background: linear-gradient(110deg, #00E676, #55F5B2);
+}
+
+.order-state {
+  display: none;
+  margin-top: 15px;
+  padding: 13px;
+  border-radius: 13px;
+  font-size: 12px;
+  line-height: 1.6;
+  background: #0A1029;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.order-state.show {
+  display: block;
+}
+
+.empty-order {
+  display: none;
+  text-align: center;
+  padding: 27px 18px;
+}
+
+.empty-order .empty-icon {
+  font-size: 38px;
+  margin-bottom: 12px;
+}
+
+.empty-order strong {
+  display: block;
+  font-size: 16px;
+}
+
+.empty-order p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* =========================
+   BOTTOM NAVIGATION
+========================= */
+
+.bottom-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  z-index: 1200;
+  width: 100%;
+  max-width: 680px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 10px 5px calc(10px + env(safe-area-inset-bottom));
+  background: rgba(8,11,29,.97);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  color: #8993C4;
+  font-size: 10px;
+  padding: 5px 0;
+}
+
+.nav-icon {
+  font-size: 21px;
+  line-height: 1.2;
+}
+
+.nav-item.active {
+  color: var(--violet2);
+  text-shadow: 0 0 15px #8B35FF80;
+}
+
+.nav-item.active .nav-icon {
+  filter: drop-shadow(0 0 7px #8B35FF);
+}
+
+/* =========================
+   NOTIFIKASI
+========================= */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(86px + env(safe-area-inset-bottom));
+  transform: translate(-50%, 15px);
+  z-index: 2000;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  padding: 13px 17px;
+  border-radius: 14px;
+  background: #22284D;
+  border: 1px solid var(--border);
+  color: white;
+  font-size: 12px;
+  line-height: 1.5;
+  opacity: 0;
+  pointer-events: none;
+  transition: .25s;
+  box-shadow: 0 10px 30px #0006;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (min-width: 500px) {
+  .map-wrap {
+    height: 430px;
+  }
+
+  .status-card,
+  .profile-card,
+  .order-card {
+    margin-left: 18px;
+    margin-right: 18px;
+  }
+}
+
+@media (max-width: 360px) {
+  .brand-mark {
+    font-size: 25px;
+  }
+
+  .brand-subtitle {
+    letter-spacing: 2px;
+  }
+
+  .header {
+    padding: 13px 11px;
+  }
+
+  .status-card {
+    padding: 14px;
+  }
+
+  .status-title {
+    font-size: 22px;
+  }
+
+  .order-body {
+    padding: 12px;
+  }
+
+  .fare-value {
+    font-size: 22px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+
+    <div class="brand">
+      <div class="brand-mark">
+        <span>N</span><span>EX</span><span>X</span>
+      </div>
+
+      <div>
+        <div class="brand-subtitle">DRIVER</div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button
+        class="icon-button"
+        type="button"
+        onclick="lihatNotifikasi()"
+        aria-label="Notifikasi"
+      >♧</button>
+
+      <div class="avatar" aria-label="Profil driver">🏍️</div>
+    </div>
+
+  </header>
+
+
+  <!-- STATUS -->
+  <section class="status-card">
+
+    <div class="status-top">
+
+      <div>
+        <div class="status-label">STATUS PENGEMUDI</div>
+
+        <div id="statusTitle" class="status-title offline">
+          OFFLINE
+        </div>
+
+        <div id="statusDesc" class="status-desc">
+          Aktifkan untuk mulai menerima pesanan
+        </div>
+      </div>
+
+      <button
+        id="statusToggle"
+        class="status-toggle"
+        type="button"
+        onclick="ubahStatusOnline()"
+        aria-label="Ubah status online"
+      >
+        <span></span>
+      </button>
+
+    </div>
+
+    <div class="vehicle-title">JENIS KENDARAAN</div>
+
+    <div class="vehicle-options">
+
+      <button
+        id="vehicleBike"
+        class="vehicle-button selected"
+        type="button"
+        onclick="pilihKendaraan('MOTOR')"
+      >
+        🛵 MOTOR
+      </button>
+
+      <button
+        id="vehicleCar"
+        class="vehicle-button"
+        type="button"
+        onclick="pilihKendaraan('MOBIL')"
+      >
+        🚗 MOBIL
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- PETA -->
+  <div class="map-heading">
+    <div class="section-title">Peta Navigasi</div>
+    <div id="mapStatus" class="map-status">GPS BELUM AKTIF</div>
+  </div>
+
+  <section class="map-wrap">
+
+    <div id="map"></div>
+
+    <div class="gps-pill">
+      <span id="gpsDot" class="gps-dot"></span>
+      <span id="gpsText">GPS menunggu aktivasi</span>
+    </div>
+
+    <div class="map-tools">
+
+      <button
+        class="map-tool"
+        type="button"
+        onclick="kembaliKePosisiSaya()"
+        aria-label="Kembali ke posisi saya"
+        title="Kembali ke posisi saya"
+      >◎</button>
+
+      <button
+        class="map-tool"
+        type="button"
+        onclick="perbesarPeta()"
+        aria-label="Perbesar peta"
+      >＋</button>
+
+      <button
+        class="map-tool"
+        type="button"
+        onclick="perkecilPeta()"
+        aria-label="Perkecil peta"
+      >－</button>
+
+    </div>
+
+  </section>
+
+
+  <!-- PROFIL -->
+  <section class="profile-card">
+
+    <div class="profile-top">
+
+      <div class="profile-avatar">🏍️</div>
+
+      <div style="min-width:0">
+        <div class="profile-name">Suhendro</div>
+        <div id="vehicleInfo" class="profile-subtitle">
+          Pengemudi Motor
+        </div>
+      </div>
+
+      <div class="demo-badge">SIMULASI</div>
+
+    </div>
+
+    <div class="stats">
+
+      <div class="stat">
+        <strong>—</strong>
+        <span>Rating</span>
+      </div>
+
+      <div class="stat">
+        <strong id="tripCount">0</strong>
+        <span>Trip simulasi</span>
+      </div>
+
+      <div class="stat">
+        <strong id="completedCount">0</strong>
+        <span>Selesai</span>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- PESANAN -->
+  <section class="order-card" id="orderCard">
+
+    <div class="order-header">
+
+      <div class="order-heading">🔔 Pesanan Masuk</div>
+
+      <div id="orderBadge" class="demo-timer">
+        DEMO
+      </div>
+
+    </div>
+
+    <div id="orderContent" class="order-body">
+
+      <div class="passenger-row">
+
+        <div class="passenger-avatar">👤</div>
+
+        <div>
+          <div class="passenger-name">Penumpang Simulasi</div>
+          <div class="passenger-rating">★ Contoh pesanan</div>
+        </div>
+
+      </div>
+
+      <div class="route-point">
+
+        <div class="route-icon"></div>
+
+        <div>
+          <div class="route-label">LOKASI PENJEMPUTAN</div>
+          <div class="route-address" id="pickupAddress">
+            Pasar Bumiayu
+          </div>
+          <div class="route-extra">
+            Titik jemput simulasi
+          </div>
+        </div>
+
+      </div>
+
+      <div class="route-point">
+
+        <div class="route-icon destination"></div>
+
+        <div>
+          <div class="route-label">TUJUAN</div>
+          <div class="route-address" id="destinationAddress">
+            Stasiun Bumiayu
+          </div>
+          <div class="route-extra">
+            Tujuan simulasi
+          </div>
+        </div>
+
+      </div>
+
+      <div class="order-metrics">
+
+        <div class="metric">
+          <div class="metric-label">JARAK JEMPUT</div>
+          <div id="pickupDistance" class="metric-value">—</div>
+        </div>
+
+        <div class="metric">
+          <div class="metric-label">JARAK PERJALANAN</div>
+          <div id="tripDistance" class="metric-value orange">—</div>
+        </div>
+
+      </div>
+
+      <div class="fare-box">
+
+        <div class="fare-label">ESTIMASI TARIF SIMULASI</div>
+
+        <div id="fareValue" class="fare-value">
+          Rp18.500
+        </div>
+
+        <div class="fare-note">
+          Nilai contoh, bukan tarif perjalanan sebenarnya.
+        </div>
+
+      </div>
+
+      <div class="order-actions">
+
+        <button
+          id="rejectButton"
+          class="btn btn-reject"
+          type="button"
+          onclick="tolakPesanan()"
+        >
+          ✕ Tolak
+        </button>
+
+        <button
+          id="acceptButton"
+          class="btn btn-primary"
+          type="button"
+          onclick="terimaPesanan()"
+        >
+          ✓ Terima Pesanan
+        </button>
+
+      </div>
+
+      <div id="orderState" class="order-state"></div>
+
+    </div>
+
+    <div id="emptyOrder" class="empty-order">
+
+      <div class="empty-icon">📭</div>
+
+      <strong id="emptyTitle">Belum ada pesanan</strong>
+
+      <p id="emptyDescription">
+        Aktifkan status ONLINE untuk menjalankan simulasi pesanan.
+      </p>
+
+      <button
+        id="newDemoButton"
+        class="btn btn-primary"
+        type="button"
+        onclick="pesananBaru()"
+        style="display:none;width:100%"
+      >
+        Buat Pesanan Demo
+      </button>
+
+    </div>
+
+  </section>
+
+</div>
+
+
+<!-- NAVIGASI BAWAH -->
+<nav class="bottom-nav" aria-label="Navigasi utama">
+
+  <button class="nav-item active" onclick="menuNavigasi('beranda', this)">
+    <span class="nav-icon">⌂</span>
+    <span>Beranda</span>
+  </button>
+
+  <button class="nav-item" onclick="menuNavigasi('pesanan', this)">
+    <span class="nav-icon">☷</span>
+    <span>Pesanan</span>
+  </button>
+
+  <button class="nav-item" onclick="menuNavigasi('riwayat', this)">
+    <span class="nav-icon">◷</span>
+    <span>Riwayat</span>
+  </button>
+
+  <button class="nav-item" onclick="menuNavigasi('akun', this)">
+    <span class="nav-icon">♙</span>
+    <span>Akun</span>
+  </button>
+
+</nav>
+
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+
+<!-- LEAFLET JAVASCRIPT -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+"use strict";
+
+/* =====================================
+   KONFIGURASI SIMULASI
+===================================== */
+
+// Titik awal peta: sekitar Bumiayu, Brebes.
+// GPS akan mengganti posisi ini ketika berhasil.
+const POSISI_AWAL = [-7.242, 108.998];
+
+// Titik contoh Pasar Bumiayu.
+// Ini hanya perkiraan untuk simulasi.
+const TITIK_JEMPUT = [-7.244, 108.991];
+
+// Titik contoh Stasiun Bumiayu.
+// Ini hanya perkiraan untuk simulasi.
+const TITIK_TUJUAN = [-7.246, 109.005];
+
+let online = false;
+let kendaraan = "MOTOR";
+let statusPesanan = "MENUNGGU";
+
+let posisiSaya = null;
+let markerSaya = null;
+let markerJemput = null;
+let markerTujuan = null;
+
+let garisRute = null;
+let gpsWatchId = null;
+
+let jumlahTrip = 0;
+let jumlahSelesai = 0;
+let gpsAktif = false;
+let petaSiap = false;
+
+let toastTimer = null;
+
+
+/* =====================================
+   INISIALISASI PETA
+===================================== */
+
+const map = L.map("map", {
+  zoomControl: false
+}).setView(POSISI_AWAL, 14);
+
+L.tileLayer(
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    maxZoom: 19,
+    attribution: "&copy; OpenStreetMap"
+  }
+).addTo(map);
+
+petaSiap = true;
+
+L.control.zoom({
+  position: "bottomleft"
+}).addTo(map);
+
+
+// Ikon posisi driver
+const ikonDriver = L.divIcon({
+  className: "",
+  html: '<div class="driver-marker">➤</div>',
+  iconSize: [42, 42],
+  iconAnchor: [21, 21]
+});
+
+
+// Ikon penjemputan
+const ikonJemput = L.divIcon({
+  className: "",
+  html: '<div class="pickup-marker"><span>●</span></div>',
+  iconSize: [30, 30],
+  iconAnchor: [15, 30]
+});
+
+
+/* =====================================
+   UTILITAS
+===================================== */
+
+function tampilkanPesan(teks) {
+  const toast = document.getElementById("toast");
+
+  toast.textContent = teks;
+  toast.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer = setTimeout(function() {
+    toast.classList.remove("show");
+  }, 2800);
+}
+
+
+function formatJarak(meter) {
+  if (!Number.isFinite(meter)) return "—";
+
+  if (meter < 1000) {
+    return Math.round(meter) + " m";
+  }
+
+  return (meter / 1000).toFixed(1).replace(".", ",") + " km";
+}
+
+
+function jarakMeter(a, b) {
+  const R = 6371000;
+
+  const rad = function(derajat) {
+    return derajat * Math.PI / 180;
+  };
+
+  const dLat = rad(b[0] - a[0]);
+  const dLon = rad(b[1] - a[1]);
+
+  const lat1 = rad(a[0]);
+  const lat2 = rad(b[0]);
+
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1) *
+    Math.cos(lat2) *
+    Math.sin(dLon / 2) ** 2;
+
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+
+
+/* =====================================
+   MARKER DRIVER
+===================================== */
+
+function perbaruiMarkerSaya(lat, lon) {
+  posisiSaya = [lat, lon];
+
+  if (!markerSaya) {
+    markerSaya = L.marker(posisiSaya, {
+      icon: ikonDriver,
+      zIndexOffset: 1000
+    }).addTo(map);
+
+    markerSaya.bindPopup("Posisi Anda");
+  } else {
+    markerSaya.setLatLng(posisiSaya);
+  }
+
+  perbaruiInfoJarak();
+}
+
+
+function perbaruiInfoJarak() {
+  if (!posisiSaya) return;
+
+  const jarakJemput = jarakMeter(
+    posisiSaya,
+    TITIK_JEMPUT
+  );
+
+  document.getElementById("pickupDistance").textContent =
+    formatJarak(jarakJemput);
+
+  document.getElementById("tripDistance").textContent =
+    formatJarak(jarakMeter(TITIK_JEMPUT, TITIK_TUJUAN));
+}
+
+
+/* =====================================
+   GPS
+===================================== */
+
+function aktifkanGPS() {
+  if (!navigator.geolocation) {
+    tampilkanPesan("Browser ini tidak mendukung GPS.");
+    return;
+  }
+
+  if (!window.isSecureContext) {
+    tampilkanPesan(
+      "GPS memerlukan HTTPS atau localhost yang aman."
+    );
+    return;
+  }
+
+  if (gpsWatchId !== null) {
+    return;
+  }
+
+  document.getElementById("gpsText").textContent =
+    "Meminta lokasi GPS...";
+
+  navigator.geolocation.getCurrentPosition(
+    function(position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      gpsAktif = true;
+
+      perbaruiMarkerSaya(lat, lon);
+
+      map.setView([lat, lon], 16);
+
+      document.getElementById("gpsText").textContent =
+        "GPS aktif · Posisi ditemukan";
+
+      document.getElementById("gpsDot").classList.add("active");
+
+      document.getElementById("mapStatus").textContent =
+        "GPS AKTIF";
+
+      tampilkanPesan("Lokasi GPS berhasil ditemukan.");
+    },
+
+    function(error) {
+      let pesan = "Lokasi GPS belum berhasil diperoleh.";
+
+      if (error.code === 1) {
+        pesan = "Izin lokasi ditolak. Izinkan akses lokasi browser.";
+      } else if (error.code === 2) {
+        pesan = "Posisi belum tersedia. Periksa GPS dan sinyal.";
+      } else if (error.code === 3) {
+        pesan = "GPS terlalu lama merespons. Coba lagi.";
+      }
+
+      document.getElementById("gpsText").textContent =
+        "GPS belum tersedia";
+
+      tampilkanPesan(pesan);
+    },
+
+    {
+      enableHighAccuracy: true,
+      timeout: 15000,
+      maximumAge: 0
+    }
+  );
+
+  gpsWatchId = navigator.geolocation.watchPosition(
+    function(position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      gpsAktif = true;
+
+      perbaruiMarkerSaya(lat, lon);
+
+      document.getElementById("gpsText").textContent =
+        "GPS aktif · Lokasi diperbarui";
+
+      document.getElementById("gpsDot").classList.add("active");
+
+      document.getElementById("mapStatus").textContent =
+        "GPS LIVE";
+    },
+
+    function(error) {
+      if (error.code === 1) {
+        document.getElementById("gpsText").textContent =
+          "Izin GPS perlu diperiksa";
+      } else {
+        document.getElementById("gpsText").textContent =
+          "Menunggu sinyal GPS";
+      }
+
+      document.getElementById("gpsDot").classList.remove("active");
+    },
+
+    {
+      enableHighAccuracy: true,
+      maximumAge: 2000,
+      timeout: 20000
+    }
+  );
+}
+
+
+function hentikanGPS() {
+  if (gpsWatchId !== null) {
+    navigator.geolocation.clearWatch(gpsWatchId);
+    gpsWatchId = null;
+  }
+
+  gpsAktif = false;
+
+  document.getElementById("gpsDot").classList.remove("active");
+
+  document.getElementById("gpsText").textContent =
+    "GPS tidak dipantau";
+
+  document.getElementById("mapStatus").textContent =
+    "GPS TIDAK AKTIF";
+}
+
+
+function kembaliKePosisiSaya() {
+  if (!posisiSaya) {
+    tampilkanPesan("Aktifkan GPS untuk menemukan posisi Anda.");
+    aktifkanGPS();
+    return;
+  }
+
+  map.setView(posisiSaya, 16, {
+    animate: true
+  });
+
+  if (markerSaya) {
+    markerSaya.openPopup();
+  }
+}
+
+
+function perbesarPeta() {
+  map.zoomIn();
+}
+
+
+function perkecilPeta() {
+  map.zoomOut();
+}
+
+
+/* =====================================
+   STATUS ONLINE / OFFLINE
+===================================== */
+
+function ubahStatusOnline() {
+  online = !online;
+
+  const tombol = document.getElementById("statusToggle");
+  const judul = document.getElementById("statusTitle");
+  const deskripsi = document.getElementById("statusDesc");
+
+  tombol.classList.toggle("active", online);
+
+  if (online) {
+    judul.textContent = "ONLINE";
+    judul.className = "status-title online";
+
+    deskripsi.textContent =
+      "Siap menjalankan simulasi pesanan";
+
+    aktifkanGPS();
+
+    tampilkanPesan("Mode ONLINE aktif.");
+
+    if (statusPesanan === "MENUNGGU") {
+      tampilkanPesanan();
+    }
+
+  } else {
+    judul.textContent = "OFFLINE";
+    judul.className = "status-title offline";
+
+    deskripsi.textContent =
+      "Anda sedang tidak menerima pesanan";
+
+    hentikanGPS();
+
+    tampilkanPesan("Mode OFFLINE aktif.");
+  }
+}
+
+
+/* =====================================
+   PILIH KENDARAAN
+===================================== */
+
+function pilihKendaraan(jenis) {
+  if (statusPesanan === "MENUJU_JEMPUT" ||
+      statusPesanan === "PERJALANAN") {
+    tampilkanPesan("Selesaikan perjalanan sebelum mengganti kendaraan.");
+    return;
+  }
+
+  kendaraan = jenis;
+
+  document.getElementById("vehicleBike")
+    .classList.toggle("selected", jenis === "MOTOR");
+
+  document.getElementById("vehicleCar")
+    .classList.toggle("selected", jenis === "MOBIL");
+
+  document.getElementById("vehicleInfo").textContent =
+    "Pengemudi " + (jenis === "MOTOR" ? "Motor" : "Mobil");
+
+  document.querySelector(".profile-avatar").textContent =
+    jenis === "MOTOR" ? "🏍️" : "🚗";
+
+  tampilkanPesan("Kendaraan dipilih: " + jenis);
+}
+
+
+/* =====================================
+   PESANAN DEMO
+===================================== */
+
+function tampilkanPesanan() {
+  document.getElementById("orderContent").style.display = "block";
+  document.getElementById("emptyOrder").style.display = "none";
+
+  document.getElementById("orderBadge").textContent = "DEMO";
+
+  if (statusPesanan === "MENUNGGU") {
+    document.getElementById("acceptButton").style.display = "block";
+    document.getElementById("rejectButton").style.display = "block";
+
+    document.getElementById("acceptButton").textContent =
+      "✓ Terima Pesanan";
+
+    document.getElementById("rejectButton").textContent =
+      "✕ Tolak";
+
+    document.getElementById("orderState").classList.remove("show");
+  }
+}
+
+
+function sembunyikanPesanan() {
+  document.getElementById("orderContent").style.display = "none";
+  document.getElementById("emptyOrder").style.display = "block";
+}
+
+
+function pesananBaru() {
+  if (!online) {
+    tampilkanPesan("Aktifkan ONLINE terlebih dahulu.");
+    return;
+  }
+
+  statusPesanan = "MENUNGGU";
+
+  document.getElementById("emptyTitle").textContent =
+    "Pesanan Demo Siap";
+
+  document.getElementById("emptyDescription").textContent =
+    "Pesanan contoh tersedia untuk pengujian.";
+
+  document.getElementById("newDemoButton").style.display =
+    "none";
+
+  tampilkanPesanan();
+
+  tampilkanPesan("Pesanan simulasi baru tersedia.");
+}
+
+
+function tolakPesanan() {
+  if (statusPesanan !== "MENUNGGU") {
+    tampilkanPesan("Tidak ada pesanan yang menunggu.");
+    return;
+  }
+
+  statusPesanan = "DITOLAK";
+
+  document.getElementById("emptyTitle").textContent =
+    "Pesanan Ditolak";
+
+  document.getElementById("emptyDescription").textContent =
+    "Pesanan demo ditolak. Buat simulasi baru untuk mencoba lagi.";
+
+  document.getElementById("newDemoButton").style.display =
+    online ? "block" : "none";
+
+  sembunyikanPesanan();
+
+  tampilkanPesan("Pesanan simulasi ditolak.");
+}
+
+
+function terimaPesanan() {
+  if (!online) {
+    tampilkanPesan("Aktifkan ONLINE terlebih dahulu.");
+    return;
+  }
+
+  if (statusPesanan !== "MENUNGGU") {
+    tampilkanPesan("Tidak ada pesanan yang menunggu.");
+    return;
+  }
+
+  statusPesanan = "MENUJU_JEMPUT";
+
+  jumlahTrip++;
+
+  document.getElementById("tripCount").textContent =
+    jumlahTrip;
+
+  document.getElementById("orderState").classList.add("show");
+
+  document.getElementById("orderState").textContent =
+    "Pesanan diterima. Ini simulasi lokal, belum dikirim ke server.";
+
+  document.getElementById("acceptButton").textContent =
+    "▶ Mulai Perjalanan";
+
+  document.getElementById("acceptButton").onclick =
+    mulaiPerjalanan;
+
+  document.getElementById("rejectButton").textContent =
+    "Batalkan";
+
+  document.getElementById("rejectButton").onclick =
+    batalkanPesanan;
+
+  document.getElementById("orderBadge").textContent =
+    "DITERIMA";
+
+  pasangMarkerRute();
+
+  tampilkanPesan("Pesanan diterima. Lanjut menuju penjemputan.");
+}
+
+
+function pasangMarkerRute() {
+  if (markerJemput) {
+    map.removeLayer(markerJemput);
+  }
+
+  if (markerTujuan) {
+    map.removeLayer(markerTujuan);
+  }
+
+  markerJemput = L.marker(TITIK_JEMPUT, {
+    icon: ikonJemput
+  }).addTo(map);
+
+  markerJemput.bindPopup("Titik penjemputan simulasi");
+
+  markerTujuan = L.marker(TITIK_TUJUAN, {
+    icon: ikonJemput
+  }).addTo(map);
+
+  markerTujuan.bindPopup("Tujuan simulasi");
+
+  const semuaTitik = [
+    TITIK_JEMPUT,
+    TITIK_TUJUAN
+  ];
+
+  if (posisiSaya) {
+    semuaTitik.push(posisiSaya);
+  }
+
+  map.fitBounds(L.latLngBounds(semuaTitik), {
+    padding: [35, 35],
+    maxZoom: 15
+  });
+}
+
+
+function mulaiPerjalanan() {
+  if (statusPesanan !== "MENUJU_JEMPUT") {
+    return;
+  }
+
+  statusPesanan = "PERJALANAN";
+
+  document.getElementById("orderBadge").textContent =
+    "BERJALAN";
+
+  document.getElementById("orderState").textContent =
+    "Perjalanan simulasi sedang berlangsung. Tekan SELESAI untuk menutup simulasi.";
+
+  document.getElementById("acceptButton").textContent =
+    "✓ Selesaikan Perjalanan";
+
+  document.getElementById("acceptButton").onclick =
+    selesaikanPerjalanan;
+
+  document.getElementById("rejectButton").style.display =
+    "none";
+
+  tampilkanPesan("Simulasi perjalanan dimulai.");
+}
+
+
+function selesaikanPerjalanan() {
+  if (statusPesanan !== "PERJALANAN") {
+    return;
+  }
+
+  statusPesanan = "SELESAI";
+
+  jumlahSelesai++;
+
+  document.getElementById("completedCount").textContent =
+    jumlahSelesai;
+
+  document.getElementById("emptyTitle").textContent =
+    "Perjalanan Selesai";
+
+  document.getElementById("emptyDescription").textContent =
+    "Simulasi berhasil. Anda dapat membuat simulasi baru.";
+
+  document.getElementById("newDemoButton").style.display =
+    online ? "block" : "none";
+
+  document.getElementById("orderState").classList.remove("show");
+
+  sembunyikanPesanan();
+
+  tampilkanPesan("Perjalanan simulasi selesai!");
+
+  document.getElementById("acceptButton").onclick =
+    terimaPesanan;
+
+  document.getElementById("rejectButton").onclick =
+    tolakPesanan;
+}
+
+
+function batalkanPesanan() {
+  statusPesanan = "DITOLAK";
+
+  document.getElementById("emptyTitle").textContent =
+    "Pesanan Dibatalkan";
+
+  document.getElementById("emptyDescription").textContent =
+    "Simulasi dibatalkan.";
+
+  document.getElementById("newDemoButton").style.display =
+    online ? "block" : "none";
+
+  sembunyikanPesanan();
+
+  tampilkanPesan("Pesanan simulasi dibatalkan.");
+}
+
+
+/* =====================================
+   NAVIGASI BAWAH
+===================================== */
+
+function menuNavigasi(menu, tombol) {
+  document.querySelectorAll(".nav-item").forEach(function(item) {
+    item.classList.remove("active");
+  });
+
+  tombol.classList.add("active");
+
+  if (menu === "beranda") {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
+    tampilkanPesan("Beranda driver.");
+    return;
+  }
+
+  if (menu === "pesanan") {
+    document.getElementById("orderCard").scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+    tampilkanPesan("Menu pesanan.");
+    return;
+  }
+
+  if (menu === "riwayat") {
+    tampilkanPesan(
+      "Riwayat masih berupa simulasi lokal."
+    );
+    return;
+  }
+
+  if (menu === "akun") {
+    tampilkanPesan(
+      "Profil driver: Suhendro · Mode simulasi."
+    );
+  }
+}
+
+
+function lihatNotifikasi() {
+  tampilkanPesan(
+    online
+      ? "Mode ONLINE. Pesanan saat ini masih simulasi."
+      : "Aktifkan ONLINE untuk menjalankan simulasi."
+  );
+}
+
+
+/* =====================================
+   AWAL APLIKASI
+===================================== */
+
+window.addEventListener("load", function() {
+  setTimeout(function() {
+    map.invalidateSize();
+
+    if (petaSiap) {
+      tampilkanPesan(
+        "NEXX DRIVER siap. Aktifkan ONLINE untuk menguji GPS."
+      );
+    }
+  }, 350);
+});
+
+window.addEventListener("resize", function() {
+  map.invalidateSize();
+});
+</script>
+
+</body>
+</html>
