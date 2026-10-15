@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#7028F5">
+
+  <title>NEXX Login</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-family: Arial, sans-serif;
+      color: #241345;
+
+      background:
+        radial-gradient(
+          circle at 90% 10%,
+          rgba(255, 138, 0, .18),
+          transparent 30%
+        ),
+        linear-gradient(
+          145deg,
+          #f7f3ff,
+          #eee7ff
+        );
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .login-header {
+      padding: 30px 24px;
+      border-radius: 25px 25px 0 0;
+
+      color: white;
+
+      background:
+        radial-gradient(
+          circle at 90% 20%,
+          rgba(255, 138, 0, .7),
+          transparent 30%
+        ),
+        linear-gradient(
+          135deg,
+          #351078,
+          #7028f5,
+          #4b16bb
+        );
+
+      box-shadow: 0 10px 25px rgba(85, 35, 180, .18);
+    }
+
+    .brand {
+      font-size: 39px;
+      font-weight: 900;
+      letter-spacing: 3px;
+    }
+
+    .brand span {
+      color: #ff9a00;
+    }
+
+    .tagline {
+      margin-top: 9px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .login-card {
+      padding: 26px 22px 24px;
+      background: white;
+      border-radius: 0 0 25px 25px;
+
+      box-shadow: 0 12px 30px rgba(55, 25, 100, .09);
+    }
+
+    .login-title {
+      margin: 0;
+      font-size: 25px;
+      font-weight: 900;
+    }
+
+    .login-description {
+      margin: 9px 0 23px;
+      color: #777087;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 8px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    input {
+      width: 100%;
+      min-width: 0;
+      padding: 14px;
+
+      border: 1px solid #e2d9f4;
+      border-radius: 12px;
+
+      background: #faf9ff;
+      color: #241345;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #7028f5;
+      box-shadow: 0 0 0 3px rgba(112, 40, 245, .09);
+    }
+
+    .login-button {
+      width: 100%;
+      margin-top: 24px;
+      padding: 16px;
+
+      border: none;
+      border-radius: 13px;
+
+      background: linear-gradient(
+        110deg,
+        #ffad18,
+        #ff8a00,
+        #ff6500
+      );
+
+      color: white;
+      font-size: 16px;
+      font-weight: 900;
+
+      box-shadow: 0 7px 18px rgba(255, 115, 0, .23);
+    }
+
+    .login-button:disabled {
+      opacity: .65;
+    }
+
+    .message {
+      display: none;
+      margin-top: 17px;
+      padding: 13px;
+
+      border-radius: 12px;
+      background: #f0ebff;
+      color: #6021d1;
+
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .footer {
+      margin-top: 20px;
+      text-align: center;
+      color: #9992aa;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="login-container">
+
+    <header class="login-header">
+      <div class="brand">NEX<span>X</span></div>
+      <div class="tagline">
+        Perjalanan lebih mudah dimulai di sini.
+      </div>
+    </header>
+
+    <section class="login-card">
+
+      <h1 class="login-title">Selamat Datang!</h1>
+
+      <p class="login-description">
+        Masuk menggunakan akun NEXX yang sudah terdaftar.
+      </p>
+
+      <form id="loginForm">
+
+        <label for="email">Email</label>
+
+        <input
+          id="email"
+          type="email"
+          placeholder="Masukkan email"
+          autocomplete="username"
+          required
+        >
+
+        <label for="password">Kata Sandi</label>
+
+        <input
+          id="password"
+          type="password"
+          placeholder="Masukkan kata sandi"
+          autocomplete="current-password"
+          required
+        >
+
+        <button
+          class="login-button"
+          id="loginButton"
+          type="submit"
+        >
+          MASUK KE NEXX →
+        </button>
+
+      </form>
+
+      <div class="message" id="message" role="status"></div>
+
+    </section>
+
+    <div class="footer">
+      NEXX SIMULATION · Secure Login
+    </div>
+
+  </main>
+
+  <script type="module">
+    import {
+      initializeApp
+    } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
+    import {
+      getAuth,
+      signInWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVPNfaUs8dmsr6n4oeb9WKGAlfsZ4nVfE",
+      authDomain: "nexx-simulasi.firebaseapp.com",
+      databaseURL: "https://nexx-simulasi-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "nexx-simulasi",
+      storageBucket: "nexx-simulasi.firebasestorage.app",
+      messagingSenderId: "741542128730",
+      appId: "1:741542128730:web:d12c9246b9810216c0fc63"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const form = document.getElementById("loginForm");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const button = document.getElementById("loginButton");
+    const message = document.getElementById("message");
+
+    form.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      message.style.display = "block";
+      message.textContent = "Sedang memeriksa akun...";
+
+      button.disabled = true;
+
+      try {
+        const credential = await signInWithEmailAndPassword(
+          auth,
+          emailInput.value.trim(),
+          passwordInput.value
+        );
+
+        message.textContent = "Login berhasil! Membuka halaman penumpang...";
+passwordInput.value = "";
+
+setTimeout(function() {
+  window.location.href = "NEXX-PENUMPANG.html";
+}, 1500);
+
+      } catch (error) {
+        const messages = {
+          "auth/invalid-email":
+            "Format email tidak valid.",
+
+          "auth/invalid-credential":
+            "Email atau kata sandi tidak sesuai.",
+
+          "auth/user-disabled":
+            "Akun ini dinonaktifkan.",
+
+          "auth/too-many-requests":
+            "Terlalu banyak percobaan. Coba lagi nanti.",
+
+          "auth/network-request-failed":
+            "Koneksi internet bermasalah."
+        };
+
+        message.textContent =
+  "Kode error: " + error.code +
+  " | " +
+  (messages[error.code] ||
+   error.message ||
+   "Login belum berhasil.");
+
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+
+</body>
+</html>
