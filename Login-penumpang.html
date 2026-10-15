@@ -283,9 +283,32 @@
         message.textContent = "Login berhasil! Membuka halaman penumpang...";
 passwordInput.value = "";
 
+message.textContent = "Login berhasil! Memeriksa akun...";
+passwordInput.value = "";
+
+const uid = credential.user.uid;
+
+const UID_PENUMPANG = "d6nrr1YHgoXRBaCIuMMuQm7YZra2";
+const UID_PENGEMUDI = "p6iENr0Gt1gnSfdSv4FCz4brL803";
+
+let halamanTujuan = "";
+
+if (uid === UID_PENUMPANG) {
+  halamanTujuan = "NEXX-PENUMPANG.html";
+} else if (uid === UID_PENGEMUDI) {
+  halamanTujuan = "NEXX-DRIVER.html";
+} else {
+  message.textContent =
+    "Login berhasil, tetapi akun belum terdaftar untuk simulasi NEXX.";
+  await auth.signOut();
+  return;
+}
+
+message.textContent = "Login berhasil! Membuka aplikasi NEXX...";
+
 setTimeout(function() {
-  window.location.href = "NEXX-PENUMPANG.html";
-}, 1500);
+  window.location.href = halamanTujuan;
+}, 1000);
 
       } catch (error) {
         const messages = {
