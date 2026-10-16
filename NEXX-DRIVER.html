@@ -2053,10 +2053,15 @@ function mulaiPantauPesanan() {
   const ordersRef = ref(db, "orders");
 
   onValue(
-    ordersRef,
-    (snapshot) => {
+  ordersRef,
+  (snapshot) => {
 
-      let ditemukan = false;
+    console.log(
+      "NEXX DRIVER: DATA ORDERS DITERIMA",
+      snapshot.val()
+    );
+
+    let ditemukan = false;
 
       snapshot.forEach((child) => {
 
