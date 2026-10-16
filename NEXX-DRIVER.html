@@ -2047,7 +2047,16 @@ mulaiKirimLokasiDriver();
 /* ================================
    PANTAU PESANAN REALTIME
 ================================ */
+onValue(
+  ordersRef,
+  (snapshot) => {
 
+    console.log(
+      "NEXX DRIVER: DATA ORDERS DITERIMA",
+      snapshot.val()
+    );
+
+    let ditemukan = false;
 function mulaiPantauPesanan() {
 
   const ordersRef = ref(db, "orders");
