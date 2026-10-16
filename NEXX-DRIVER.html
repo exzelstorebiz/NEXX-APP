@@ -2062,8 +2062,7 @@ function mulaiPantauPesanan() {
 
         const order = child.val();
 
-        if (order && order.status === "SEARCHING" && window.online === true) {
-
+        if (order && order.status === "SEARCHING") {
           ditemukan = true;
 
           pesananAktifId = child.key;
