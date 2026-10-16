@@ -1624,9 +1624,9 @@ async function terimaPesanan() {
 
 
   if (
-    window.pesananAktif.status !==
-    "SEARCHING"
-  ) {
+  window.online === true &&
+  order.status === "SEARCHING"
+) {
 
     tampilkanPesan(
       "Pesanan sudah tidak tersedia."
