@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NEXX - Mencari Driver</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      #eee6ff 0%,
+      #f7f5fc 38%,
+      #ffffff 75%
+    );
+
+  color: #171329;
+  overflow: hidden;
+}
+
+/* =========================
+   HALAMAN PENCARIAN
+========================= */
+
+.search-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 25px;
+  text-align: center;
+}
+
+.logo {
+  width: 68px;
+  height: 68px;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(135deg, #7b2ff7, #ff8a00);
+
+  font-size: 32px;
+  font-weight: 900;
+
+  box-shadow:
+    0 0 25px rgba(123,47,247,.55),
+    0 0 35px rgba(255,138,0,.25);
+
+  margin-bottom: 30px;
+}
+
+.title {
+  font-size: 25px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: #5f5870;
+  font-size: 14px;
+  margin-bottom: 45px;
+}
+
+/* =========================
+   ANIMASI PENCARIAN
+========================= */
+
+.search-animation {
+  position: relative;
+  width: 190px;
+  height: 190px;
+  margin-bottom: 35px;
+}
+
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid rgba(123,47,247,.65);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  animation: radar 2.5s infinite;
+}
+
+.circle:nth-child(1) {
+  width: 65px;
+  height: 65px;
+  animation-delay: 0s;
+}
+
+.circle:nth-child(2) {
+  width: 115px;
+  height: 115px;
+  animation-delay: .6s;
+}
+
+.circle:nth-child(3) {
+  width: 165px;
+  height: 165px;
+  animation-delay: 1.2s;
+}
+
+.search-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  width: 24px;
+  height: 24px;
+
+  border-radius: 50%;
+  background: #ff8a00;
+
+  transform: translate(-50%, -50%);
+
+  box-shadow:
+    0 0 15px #ff8a00,
+    0 0 35px rgba(255,138,0,.7);
+
+  animation: pulse 1.2s infinite;
+}
+
+@keyframes radar {
+  0% {
+    transform: translate(-50%, -50%) scale(.65);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  50% {
+    transform: translate(-50%, -50%) scale(1.3);
+  }
+}
+
+/* =========================
+   STATUS
+========================= */
+
+.status-box {
+  width: 100%;
+  max-width: 390px;
+
+  padding: 18px 20px;
+
+  border-radius: 18px;
+
+  background: rgba(255,255,255,.92);
+
+  border: 1px solid #e4dff0;
+
+  box-shadow:
+    0 10px 30px rgba(50,30,90,.10);
+
+  backdrop-filter: blur(10px);
+}
+
+.status-main {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.status-small {
+  font-size: 13px;
+  color: #716a80;
+}
+
+/* =========================
+   BATAL
+========================= */
+
+.cancel-button {
+  margin-top: 25px;
+
+  width: 100%;
+  max-width: 390px;
+
+  padding: 15px;
+
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 15px;
+
+  background: transparent;
+  color: #d8d0e5;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+/* =========================
+   SCREEN SYSTEM
+========================= */
+
+.screen {
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 25px;
+
+  text-align: center;
+}
+
+
+/* =========================
+   DRIVER FOUND
+========================= */
+
+.driver-screen {
+  display: none;
+
+  justify-content: flex-start;
+
+  padding-top: 28px;
+
+  overflow-y: auto;
+}
+
+
+.found-header {
+  width: 100%;
+  max-width: 430px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 18px;
+
+  text-align: left;
+}
+
+
+.found-title {
+  font-size: 23px;
+  font-weight: 800;
+
+  color: #171329;
+}
+
+
+.found-subtitle {
+  margin-top: 5px;
+
+  font-size: 13px;
+
+  color: #6c6578;
+}
+
+
+.found-check {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #7b2ff7;
+
+  color: white;
+
+  font-size: 22px;
+  font-weight: bold;
+
+  box-shadow:
+    0 6px 18px rgba(123,47,247,.25);
+}
+
+
+/* =========================
+   MAP
+========================= */
+
+.map-container {
+  width: 100%;
+  max-width: 430px;
+
+  height: 200px;
+
+  overflow: hidden;
+
+  border-radius: 25px;
+
+  background: #e9e5ef;
+
+  border: 1px solid #ddd6e8;
+
+  box-shadow:
+    0 10px 30px rgba(50,30,90,.12);
+
+  position: relative;
+}
+
+
+.fake-map {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(30deg,
+      transparent 46%,
+      #ffffff 47%,
+      #ffffff 51%,
+      transparent 52%
+    ),
+    linear-gradient(120deg,
+      transparent 46%,
+      #ffffff 47%,
+      #ffffff 51%,
+      transparent 52%
+    ),
+    #ddd9e3;
+}
+
+
+.road {
+  position: absolute;
+
+  background: #ffffff;
+
+  border-radius: 50px;
+
+  opacity: .95;
+}
+
+
+.road-1 {
+  width: 130%;
+  height: 25px;
+
+  left: -15%;
+  top: 35%;
+
+  transform: rotate(-18deg);
+}
+
+
+.road-2 {
+  width: 120%;
+  height: 20px;
+
+  left: -10%;
+  top: 68%;
+
+  transform: rotate(25deg);
+}
+
+
+.road-3 {
+  width: 25px;
+  height: 130%;
+
+  left: 60%;
+  top: -15%;
+
+  transform: rotate(15deg);
+}
+
+
+/* =========================
+   ROUTE
+========================= */
+
+.route-line {
+  position: absolute;
+
+  width: 210px;
+  height: 7px;
+
+  background: #7b2ff7;
+
+  left: 25%;
+  top: 55%;
+
+  transform: rotate(-28deg);
+
+  border-radius: 10px;
+
+  box-shadow:
+    0 0 8px rgba(123,47,247,.35);
+}
+
+
+/* =========================
+   MAP MARKERS
+========================= */
+
+.driver-marker {
+  position: absolute;
+
+  left: 23%;
+  top: 62%;
+
+  width: 45px;
+  height: 45px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #7b2ff7;
+
+  border: 4px solid white;
+
+  font-size: 21px;
+
+  box-shadow:
+    0 5px 15px rgba(0,0,0,.2);
+}
+
+
+.passenger-marker {
+  position: absolute;
+
+  right: 17%;
+  top: 26%;
+
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #ff8a00;
+
+  border: 4px solid white;
+
+  color: white;
+
+  box-shadow:
+    0 5px 15px rgba(0,0,0,.2);
+}
+
+
+.map-label {
+  position: absolute;
+
+  padding: 5px 9px;
+
+  background: rgba(255,255,255,.92);
+
+  border-radius: 8px;
+
+  font-size: 11px;
+  font-weight: bold;
+
+  box-shadow:
+    0 3px 10px rgba(0,0,0,.12);
+}
+
+
+.driver-label {
+  left: 17%;
+  top: 78%;
+}
+
+
+.passenger-label {
+  right: 12%;
+  top: 18%;
+}
+
+
+/* =========================
+   DRIVER CARD
+========================= */
+
+.driver-card {
+  width: 100%;
+  max-width: 430px;
+
+  margin-top: 16px;
+
+  padding: 16px;
+
+  border-radius: 22px;
+
+  background: white;
+
+  border: 1px solid #e3deeb;
+
+  box-shadow:
+    0 8px 25px rgba(50,30,90,.10);
+
+  text-align: left;
+}
+
+
+.driver-top {
+  display: flex;
+
+  align-items: center;
+
+  gap: 13px;
+}
+
+
+.driver-avatar {
+  width: 56px;
+  height: 56px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(135deg,#7b2ff7,#ff8a00);
+
+  font-size: 25px;
+}
+
+
+.driver-info {
+  flex: 1;
+}
+
+
+.driver-name {
+  font-size: 18px;
+  font-weight: 800;
+
+  color: #171329;
+}
+
+
+.driver-rating {
+  margin-top: 5px;
+
+  font-size: 13px;
+
+  color: #ff8a00;
+
+  font-weight: bold;
+}
+
+
+.driver-rating span {
+  color: #756d82;
+
+  font-weight: normal;
+}
+
+
+.vehicle-icon {
+  font-size: 28px;
+}
+
+
+.driver-divider {
+  height: 1px;
+
+  background: #eeeaf2;
+
+  margin: 15px 0;
+}
+
+
+.vehicle-info {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 12px;
+
+  margin-top: 2px;
+}
+
+
+.vehicle-info div {
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+
+.info-label {
+  font-size: 10px;
+
+  color: #81798d;
+
+  font-weight: bold;
+}
+
+
+.vehicle-info strong {
+  color: #282238;
+
+  font-size: 15px;
+
+  margin-top: 2px;
+}
+
+
+.driver-status {
+  margin-top: 16px;
+
+  padding: 12px;
+
+  border-radius: 12px;
+
+  background: #f4efff;
+
+  color: #5b28ad;
+
+  font-size: 13px;
+
+  font-weight: 700;
+}
+
+
+.status-dot {
+  display: inline-block;
+
+  width: 9px;
+  height: 9px;
+
+  margin-right: 7px;
+
+  border-radius: 50%;
+
+  background: #25c76f;
+
+  box-shadow:
+    0 0 8px rgba(37,199,111,.5);
+}
+
+
+/* =========================
+   CONTACT
+========================= */
+
+.contact-button {
+  width: 100%;
+  max-width: 430px;
+
+  margin-top: 15px;
+  margin-bottom: 25px;
+
+  padding: 16px;
+
+  border: none;
+
+  border-radius: 16px;
+
+  background:
+    linear-gradient(135deg,#7b2ff7,#ff8a00);
+
+  color: white;
+
+  font-size: 15px;
+  font-weight: 800;
+
+  box-shadow:
+    0 8px 20px rgba(123,47,247,.22);
+}
+  #map {
+  width: 100%;
+  height: 100%;
+}
+</style>
+  <link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+  
+</head>
+
+<body>
+
+<!-- =========================
+     SCREEN 1 — MENCARI DRIVER
+========================= -->
+
+<div class="screen" id="searchScreen">
+
+  <div class="logo">N</div>
+
+  <div class="title">
+    Mencari Pengemudi
+  </div>
+
+  <div class="subtitle">
+    NEXX sedang mencari pengemudi untuk Anda
+  </div>
+
+  <div class="search-animation">
+
+    <div class="circle"></div>
+    <div class="circle"></div>
+    <div class="circle"></div>
+
+    <div class="search-dot"></div>
+
+  </div>
+
+  <div class="status-box">
+
+    <div class="status-main">
+      Mencari driver terdekat...
+    </div>
+
+    <div class="status-small">
+      Mohon tunggu, kami sedang mencarikan pengemudi.
+    </div>
+
+  </div>
+
+  <button class="cancel-button">
+    Batalkan Pesanan
+  </button>
+
+</div>
+
+
+<!-- =========================
+     SCREEN 2 — DRIVER DITEMUKAN
+========================= -->
+
+<div class="screen driver-screen" id="driverScreen">
+
+  <div class="found-header">
+
+    <div>
+      <div class="found-title">
+        Pengemudi Ditemukan
+      </div>
+
+      <div class="found-subtitle">
+        Pengemudi sedang menuju lokasi Anda
+      </div>
+    </div>
+
+    <div class="found-check">
+      ✓
+    </div>
+
+  </div>
+
+
+  <!-- MAP -->
+
+  <div class="map-container">
+  <div id="map"></div>
+</div>
+
+
+  <!-- DRIVER CARD -->
+
+  <div class="driver-card">
+
+    <div class="driver-top">
+
+      <div class="driver-avatar">
+        👤
+      </div>
+
+      <div class="driver-info">
+
+        <div class="driver-name">
+          Suhendro
+        </div>
+
+        <div class="driver-rating">
+          ★ 4.9
+          <span>• Pengemudi NEXX</span>
+        </div>
+
+      </div>
+
+      <div class="vehicle-icon">
+        🚗
+      </div>
+
+    </div>
+
+
+    <div class="driver-divider"></div>
+
+
+    <div class="vehicle-info">
+
+      <div>
+        <span class="info-label">
+          KENDARAAN
+        </span>
+
+        <strong>
+          Mobil
+        </strong>
+      </div>
+
+      <div>
+        <span class="info-label">
+          NOMOR KENDARAAN
+        </span>
+
+        <strong>
+          H 1234 NXX
+        </strong>
+      </div>
+
+    </div>
+
+
+    <div class="driver-status">
+      <span class="status-dot"></span>
+
+      Driver menuju lokasi penjemputan
+    </div>
+
+  </div>
+
+
+  <button class="contact-button">
+    Hubungi Pengemudi
+  </button>
+
+</div>
+
+<script>
+
+/* =========================
+   MODE DEMO
+========================= */
+
+setTimeout(function() {
+
+  const searchScreen =
+    document.getElementById("searchScreen");
+
+  const driverScreen =
+    document.getElementById("driverScreen");
+
+  searchScreen.style.display = "none";
+
+  driverScreen.style.display = "flex";
+
+
+  /* Beri waktu browser menampilkan layar,
+     kemudian Leaflet menghitung ulang ukuran map */
+
+  setTimeout(function() {
+
+    map.invalidateSize();
+
+    map.setView(
+      posisiPenumpang,
+      15
+    );
+
+  }, 100);
+
+}, 7000);
+
+</script>
+
+
+<!-- =========================
+     LEAFLET
+========================= -->
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+const posisiPenumpang = [-6.975874, 110.073756];
+
+const map = L.map("map").setView(
+  posisiPenumpang,
+  15
+);
+
+
+L.tileLayer(
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    maxZoom: 19,
+    attribution: "&copy; OpenStreetMap"
+  }
+).addTo(map);
+
+const ikonDriver = L.divIcon({
+
+  className: "",
+
+  html: `
+    <div style="
+      width:46px;
+      height:46px;
+      border-radius:50%;
+      background:#7b2ff7;
+      border:4px solid white;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:25px;
+      box-shadow:0 4px 14px rgba(0,0,0,.28);
+    ">
+      🚗
+    </div>
+  `,
+
+  iconSize: [46, 46],
+
+  iconAnchor: [23, 23]
+
+});
+  
+const ikonPenumpang = L.divIcon({
+
+  className: "",
+
+  html: `
+    <div style="
+      width:38px;
+      height:38px;
+      border-radius:50%;
+      background:#ff8a00;
+      border:4px solid white;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      font-size:16px;
+      font-weight:bold;
+      box-shadow:0 4px 12px rgba(0,0,0,.25);
+    ">
+      ●
+    </div>
+  `,
+
+  iconSize: [38, 38],
+
+  iconAnchor: [19, 19]
+
+});
+
+
+L.marker(
+  posisiPenumpang,
+  {
+    icon: ikonPenumpang
+  }
+)
+.addTo(map)
+.bindPopup("Lokasi Anda")
+.openPopup();
+  const posisiDriver = [
+  -6.982000,
+  110.065000
+];
+
+L.marker(
+  posisiDriver,
+  {
+    icon: ikonDriver
+  }
+)
+.addTo(map)
+.bindPopup("Pengemudi NEXX");
+async function tampilkanRuteDriver() {
+
+  const url =
+    "https://router.project-osrm.org/route/v1/driving/" +
+    posisiDriver[1] + "," + posisiDriver[0] +
+    ";" +
+    posisiPenumpang[1] + "," + posisiPenumpang[0] +
+    "?overview=full&geometries=geojson";
+
+  try {
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error("Gagal mengambil rute OSRM");
+    }
+
+    const data = await response.json();
+
+    if (!data.routes || !data.routes.length) {
+      throw new Error("Rute tidak ditemukan");
+    }
+
+    const rute = data.routes[0];
+
+    const garisRute = L.geoJSON(
+      rute.geometry,
+      {
+        style: {
+          color: "#7B2FF7",
+          weight: 6,
+          opacity: 0.95,
+          lineCap: "round",
+          lineJoin: "round"
+        }
+      }
+    ).addTo(map);
+
+    map.fitBounds(
+      garisRute.getBounds(),
+      {
+        padding: [35, 35]
+      }
+    );
+
+    console.log(
+      "Jarak rute:",
+      (rute.distance / 1000).toFixed(2),
+      "km"
+    );
+
+    console.log(
+      "Estimasi waktu:",
+      Math.round(rute.duration / 60),
+      "menit"
+    );
+
+  } catch (error) {
+
+    console.error(
+      "NEXX: Gagal mendapatkan rute:",
+      error
+    );
+
+  }
+
+}
+
+tampilkanRuteDriver();
+  
+</script>
+
+</body>
+</html>
