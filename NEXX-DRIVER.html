@@ -1937,7 +1937,81 @@ let berhentiGPS = null;
 const UID_PENUMPANG =
   "d6nrr1YHgoXRBaCIuMMuQm7YZra2";
 
+function mulaiKirimLokasiDriver() {
 
+  if (!pengemudiAktif) return;
+
+  if (!navigator.geolocation) {
+    console.error("GPS tidak tersedia.");
+    return;
+  }
+
+  const lokasiRef = ref(
+    db,
+    "driverLocations/" + pengemudiAktif.uid
+  );
+
+  onDisconnect(lokasiRef)
+    .remove()
+    .catch(error => {
+      console.error("onDisconnect error:", error);
+    });
+
+  berhentiGPS = navigator.geolocation.watchPosition(
+
+    async function(position) {
+
+      if (window.online !== true) {
+        return;
+      }
+
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      const accuracy = position.coords.accuracy;
+
+      try {
+
+        await set(lokasiRef, {
+          lat: lat,
+          lng: lng,
+          accuracy: accuracy,
+          updatedAt: Date.now()
+        });
+
+        console.log(
+          "NEXX GPS:",
+          lat,
+          lng
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Gagal mengirim GPS:",
+          error
+        );
+
+      }
+
+    },
+
+    function(error) {
+
+      console.error(
+        "GPS Driver ERROR:",
+        error
+      );
+
+    },
+
+    {
+      enableHighAccuracy: true,
+      maximumAge: 3000,
+      timeout: 15000
+    }
+
+  );
+}
 let pengemudiAktif = null;
 let pesananAktifId = null;
 let pesananAktif = null;
