@@ -1987,11 +1987,7 @@ function mulaiPantauPesanan() {
 
         const order = child.val();
 
-        if (
-          order &&
-          order.status === "SEARCHING" &&
-          !ditemukan
-        ) {
+        if (order && order.status === "SEARCHING") {
 
           ditemukan = true;
 
