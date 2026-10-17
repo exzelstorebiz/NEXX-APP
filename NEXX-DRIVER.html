@@ -2089,6 +2089,7 @@ let driverGpsWatchId = null;
 ========================================================= */
 
 function mulaiPantauPesanan() {
+function mulaiPantauPesanan() {
 
   const ordersRef =
     ref(db, "orders");
@@ -2106,6 +2107,75 @@ function mulaiPantauPesanan() {
       );
 
 
+      /*
+       * =====================================================
+       * JIKA DRIVER SUDAH MEMILIKI PESANAN AKTIF
+       * =====================================================
+       *
+       * Jangan biarkan order SEARCHING lama
+       * mengambil alih tampilan.
+       */
+
+      if (
+        window.pesananAktif &&
+        window.pesananAktifId &&
+        window.pesananAktif.status !== "SEARCHING"
+      ) {
+
+        /*
+         * Cari order yang sama dengan pesanan aktif.
+         * Jika ditemukan, perbarui datanya.
+         */
+
+        const orderAktifSnapshot =
+          snapshot.child(
+            window.pesananAktifId
+          );
+
+
+        if (
+          orderAktifSnapshot.exists()
+        ) {
+
+          const orderAktif =
+            orderAktifSnapshot.val();
+
+
+          window.pesananAktif =
+            orderAktif;
+
+
+          updateUIStatusOrder(
+            orderAktif.status
+          );
+
+
+          console.log(
+            "NEXX: Mempertahankan pesanan aktif:",
+            window.pesananAktifId,
+            orderAktif.status
+          );
+
+        }
+
+
+        /*
+         * STOP DI SINI.
+         *
+         * Jangan mencari order SEARCHING lain.
+         */
+
+        return;
+
+      }
+
+
+      /*
+       * =====================================================
+       * DRIVER BELUM MEMILIKI PESANAN AKTIF
+       * =====================================================
+       */
+
       let ditemukan = false;
 
 
@@ -2119,18 +2189,34 @@ function mulaiPantauPesanan() {
           if (
             !order
           ) {
+
             return;
+
           }
 
 
           /*
-           * Hanya cari pesanan SEARCHING.
+           * Hanya ambil order SEARCHING.
            */
 
           if (
             order.status ===
             "SEARCHING"
           ) {
+
+            /*
+             * Kalau sudah menemukan satu,
+             * jangan ambil order SEARCHING lama lainnya.
+             */
+
+            if (
+              ditemukan
+            ) {
+
+              return;
+
+            }
+
 
             ditemukan = true;
 
@@ -2144,7 +2230,7 @@ function mulaiPantauPesanan() {
 
 
             console.log(
-              "NEXX: Pesanan ditemukan:",
+              "NEXX: Pesanan SEARCHING ditemukan:",
               child.key,
               order
             );
@@ -2165,12 +2251,15 @@ function mulaiPantauPesanan() {
       );
 
 
-      if (!ditemukan) {
+      /*
+       * =====================================================
+       * TIDAK ADA PESANAN SEARCHING
+       * =====================================================
+       */
 
-        /*
-         * Jangan menghapus order yang sedang
-         * ACCEPTED / TO_PICKUP / IN_TRIP.
-         */
+      if (
+        !ditemukan
+      ) {
 
         if (
           !window.pesananAktif ||
@@ -2203,6 +2292,7 @@ function mulaiPantauPesanan() {
         "NEXX Firebase ERROR:",
         error
       );
+
 
       tampilkanPesan(
         "Firebase gagal membaca pesanan."
