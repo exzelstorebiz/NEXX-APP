@@ -858,9 +858,7 @@ onAuthStateChanged(auth, async (user) => {
 
     localStorage.setItem("nexxActiveOrderId", pesananRef.key);
 
-window.location.href = "NEXX-MENCARI-DRIVER.html";
-
-return;
+berhentiMemantau = onValue(
       pesananRef,
       (snapshot) => {
         if (!snapshot.exists()) {
