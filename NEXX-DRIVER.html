@@ -1622,21 +1622,6 @@ async function terimaPesanan() {
 
   }
 
-
-  if (
-  window.online === true &&
-  order.status === "SEARCHING"
-) {
-
-    tampilkanPesan(
-      "Pesanan sudah tidak tersedia."
-    );
-
-    return;
-
-  }
-
-
   if (
     typeof window.terimaPesananFirebase !==
     "function"
