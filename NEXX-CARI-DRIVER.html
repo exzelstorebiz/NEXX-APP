@@ -1693,39 +1693,226 @@ async function tampilkanRuteDriver() {
       "NEXX: Jarak rute =",
       (
         rute.distance / 1000
-      ).toFixed(2),
-      "km"
-    );
+<!-- =========================================================
+     LEAFLET CSS & JS (Wajib diisi keduanya agar peta muncul)
+========================================================= -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+<!-- STYLE Tambahan untuk Elemen Peta -->
+<style>
+  /* Memastikan kontainer peta memiliki dimensi tinggi yang pasti */
+  #map {
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    border-radius: 18px;
+    position: relative;
+    z-index: 1;
+  }
+</style>
 
-    console.log(
-      "NEXX: Estimasi =",
-      Math.round(
-        rute.duration / 60
-      ),
-      "menit"
-    );
+<script>
+/* =========================================================
+   VARIABEL GLOBAL NEXX NAVIGASI
+========================================================= */
+let map = null;
+let markerDriver = null;
+let markerPenumpang = null;
+let garisRute = null;
 
+// Koordinat Demo Sementara (Kecamatan Weleri / Cepiring, Kendal)
+let posisiPenumpang = [-6.975874, 110.073756];
+let posisiDriver = [-6.982000, 110.065000];
 
-  } catch (error) {
+/* =========================================================
+   1. AKTIFKAN MAP (DIINSIALISASI SAAT TAMPILAN DRIVER/PENUMPANG MUNCUL)
+========================================================= */
+async function aktifkanMapDriver() {
+  console.log("NEXX: Memeriksa dan memuat peta...");
 
-    console.error(
-      "NEXX: OSRM gagal:",
-      error
-    );
-
+  const elemenMap = document.getElementById("map");
+  if (!elemenMap) {
+    console.error("NEXX Error: Elemen HTML dengan id='map' tidak ditemukan di DOM!");
+    return;
   }
 
+  // Jika instance Leaflet sudah pernah dibuat sebelumnya
+  if (map) {
+    console.log("NEXX: Map sudah aktif. Memperbarui ukuran tampilan...");
+    setTimeout(() => {
+      map.invalidateSize();
+      if (garisRute) {
+        map.fitBounds(garisRute.getBounds(), { padding: [40, 40] });
+      }
+    }, 150);
+    return;
+  }
+
+  // Membuat instance Peta Leaflet baru
+  map = L.map("map", { 
+    zoomControl: false,
+    attributionControl: false 
+  }).setView(posisiPenumpang, 15);
+
+  window.nexxMap = map;
+
+  // Memuat Tile Layer OpenStreetMap
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: "&copy; OpenStreetMap"
+  }).addTo(map);
+
+  /* -------------------------------------------------------
+     A. IKON DRIVER (MOBIL NEON VIOLET)
+  ------------------------------------------------------- */
+  const ikonDriver = L.divIcon({
+    className: "",
+    html: `
+      <div style="
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        background: #9333EA;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        border: 3px solid #ffffff;
+        box-shadow: 0 4px 15px rgba(147, 51, 234, 0.45);
+      ">🚗</div>
+    `,
+    iconSize: [46, 46],
+    iconAnchor: [23, 23]
+  });
+
+  /* -------------------------------------------------------
+     B. IKON TITIK JEMPUT (PENUMPANG OREN)
+  ------------------------------------------------------- */
+  const ikonPenumpang = L.divIcon({
+    className: "",
+    html: `
+      <div style="
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: #FF8A00;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        border: 3px solid #ffffff;
+        box-shadow: 0 4px 15px rgba(255, 138, 0, 0.45);
+      ">📍</div>
+    `,
+    iconSize: [42, 42],
+    iconAnchor: [21, 21]
+  });
+
+  /* -------------------------------------------------------
+     C. PASANG MARKER KE PETA
+  ------------------------------------------------------- */
+  markerDriver = L.marker(posisiDriver, { icon: ikonDriver })
+    .addTo(map)
+    .bindPopup("Pengemudi NEXX");
+
+  markerPenumpang = L.marker(posisiPenumpang, { icon: ikonPenumpang })
+    .addTo(map)
+    .bindPopup("Titik Penjemputan Penumpang");
+
+  // Paskan fokus peta sementara pada kedua titik awal
+  map.fitBounds([posisiDriver, posisiPenumpang], { padding: [40, 40] });
+
+  // Panggil rute OSRM
+  await tampilkanRuteDriver();
+
+  // Memaksa render ulang dimensi peta setelah animasi layar selesai
+  setTimeout(() => {
+    map.invalidateSize();
+  }, 250);
+
+  console.log("NEXX: Map + Marker + OSRM berhasil dimuat sepenuhnya.");
 }
 
+/* =========================================================
+   2. AMBIL DAN GAMBAR RUTE OSRM (DRIVER -> TITIK JEMPUT)
+========================================================= */
+async function tampilkanRuteDriver() {
+  if (!map) {
+    console.error("NEXX Error: Map belum diinisialisasi.");
+    return;
+  }
 
-/* =========================================
-   HUBUNGKAN KE FIREBASE
-========================================= */
+  const url = `https://router.project-osrm.org/route/v1/driving/${posisiDriver[1]},${posisiDriver[0]};${posisiPenumpang[1]},${posisiPenumpang[0]}?overview=full&geometries=geojson`;
 
-window.aktifkanMapDriver =
-  aktifkanMapDriver;
+  try {
+    console.log("NEXX: Mengambil kalkulasi rute OSRM...");
+    const response = await fetch(url);
 
+    if (!response.ok) {
+      throw new Error(`Koneksi HTTP OSRM Gagal: Status ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data.routes || !data.routes.length) {
+      throw new Error("Rute jalan tidak ditemukan oleh OSRM.");
+    }
+
+    const rute = data.routes[0];
+
+    // Hapus garis rute sebelumnya jika sudah pernah digambar
+    if (garisRute) {
+      map.removeLayer(garisRute);
+    }
+
+    // Gambar Garis Navigasi Neon Violet mengikuti jaringan jalan asli
+    garisRute = L.geoJSON(rute.geometry, {
+      style: {
+        color: "#9333EA",
+        weight: 6,
+        opacity: 0.9,
+        lineCap: "round",
+        lineJoin: "round"
+      }
+    }).addTo(map);
+
+    window.nexxGarisRute = garisRute;
+
+    // Sesuaikan kamera peta agar pas mengapit rute jalan
+    map.fitBounds(garisRute.getBounds(), { padding: [40, 40] });
+
+    const jarakKm = (rute.distance / 1000).toFixed(2);
+    const durasiMenit = Math.round(rute.duration / 60);
+
+    console.log(`NEXX INFO: Jarak Rute = ${jarakKm} km | Estimasi Waktu = ${durasiMenit} menit.`);
+
+  } catch (error) {
+    console.error("NEXX: Gagal merender rute OSRM:", error.message);
+  }
+}
+
+/* =========================================================
+   3. FUNGSI PERBAIKAN PERGERAKAN DRIVER REAL-TIME
+   (Panggil fungsi ini saat Firebase / GPS mengirim koordinat baru)
+========================================================= */
+function updatePosisiDriver(lat, lng) {
+  posisiDriver = [lat, lng];
+
+  if (markerDriver) {
+    markerDriver.setLatLng(posisiDriver);
+  }
+
+  // Perbarui ulang rute ke titik penjemputan secara otomatis
+  if (map) {
+    tampilkanRuteDriver();
+  }
+}
+
+// Global binding untuk pemanggilan fungsi luar / Firebase Integration
+window.aktifkanMapDriver = aktifkanMapDriver;
+window.tampilkanRuteDriver = tampilkanRuteDriver;
+window.updatePosisiDriver = updatePosisiDriver;
 </script>
 
   <script type="module">
