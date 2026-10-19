@@ -1311,39 +1311,49 @@ function tampilkanPengemudiDitemukan() {
 
 
   if (!searchScreen || !driverScreen) {
+    console.error(
+      "NEXX: Elemen layar tidak ditemukan."
+    );
     return;
   }
 
 
-  searchScreen.style.display =
-    "none";
+  /* =========================
+     PINDAH KE LAYAR DRIVER
+  ========================= */
 
-  driverScreen.style.display =
-    "flex";
+  searchScreen.style.display = "none";
+
+  driverScreen.style.display = "flex";
 
 
-  setTimeout(() => {
+  /* =========================
+     AKTIFKAN MAP
+  ========================= */
+
+  setTimeout(function() {
 
     if (
-      typeof map !== "undefined"
+      typeof window.aktifkanMapDriver ===
+      "function"
     ) {
 
-      map.invalidateSize();
+      window.aktifkanMapDriver();
 
-      map.setView(
-        posisiPenumpang,
-        15
+    } else {
+
+      console.error(
+        "NEXX: aktifkanMapDriver() belum tersedia."
       );
 
     }
 
-  }, 100);
+  }, 200);
 
 
   console.log(
-    "NEXX: Pengemudi diterima. Menampilkan Pengemudi Ditemukan."
+    "NEXX: Pengemudi ditemukan."
   );
-
 }
 
 </script>
