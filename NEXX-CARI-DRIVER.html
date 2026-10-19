@@ -859,40 +859,6 @@ body {
 
 <script>
 
-/* =========================
-   MODE DEMO
-========================= */
-
-setTimeout(function() {
-
-  const searchScreen =
-    document.getElementById("searchScreen");
-
-  const driverScreen =
-    document.getElementById("driverScreen");
-
-  searchScreen.style.display = "none";
-
-  driverScreen.style.display = "flex";
-
-
-  /* Beri waktu browser menampilkan layar,
-     kemudian Leaflet menghitung ulang ukuran map */
-
-  setTimeout(function() {
-
-    map.invalidateSize();
-
-    map.setView(
-      posisiPenumpang,
-      15
-    );
-
-  }, 100);
-
-}, 7000);
-
-</script>
 
 
 <!-- =========================
@@ -1070,5 +1036,162 @@ tampilkanRuteDriver();
   
 </script>
 
+  <script type="module">
+
+import {
+  initializeApp,
+  getApps
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+import {
+  getDatabase,
+  ref,
+  onValue
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCVPNfaUs8dmsr6n4oeb9WKGAlfsZ4nVfE",
+  authDomain: "nexx-simulasi.firebaseapp.com",
+  databaseURL: "https://nexx-simulasi-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "nexx-simulasi",
+  storageBucket: "nexx-simulasi.firebasestorage.app",
+  messagingSenderId: "741542128730",
+  appId: "1:741542128730:web:d12c9246b9810216c0fc63"
+};
+
+
+const app = getApps().length
+  ? getApps()[0]
+  : initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+const UID_PENUMPANG =
+  "d6nrr1YHgoXRBaCIuMMuQm7YZra2";
+
+
+onAuthStateChanged(auth, (user) => {
+
+  if (!user) {
+    return;
+  }
+
+  if (user.uid !== UID_PENUMPANG) {
+    return;
+  }
+
+  const orderId =
+    localStorage.getItem("nexxActiveOrderId");
+
+  if (!orderId) {
+    console.log(
+      "NEXX: Tidak ada pesanan aktif."
+    );
+    return;
+  }
+
+  console.log(
+    "NEXX: Memantau pesanan:",
+    orderId
+  );
+
+
+  const orderRef =
+    ref(db, "orders/" + orderId);
+
+
+  onValue(
+    orderRef,
+    (snapshot) => {
+
+      if (!snapshot.exists()) {
+        return;
+      }
+
+      const pesanan =
+        snapshot.val();
+
+      console.log(
+        "NEXX: Status pesanan:",
+        pesanan.status
+      );
+
+
+      if (
+        pesanan.status === "ACCEPTED"
+      ) {
+
+        tampilkanPengemudiDitemukan();
+
+      }
+
+    },
+    (error) => {
+
+      console.error(
+        "NEXX: Gagal memantau pesanan:",
+        error
+      );
+
+    }
+  );
+
+});
+
+
+function tampilkanPengemudiDitemukan() {
+
+  const searchScreen =
+    document.getElementById("searchScreen");
+
+  const driverScreen =
+    document.getElementById("driverScreen");
+
+
+  if (!searchScreen || !driverScreen) {
+    return;
+  }
+
+
+  searchScreen.style.display =
+    "none";
+
+  driverScreen.style.display =
+    "flex";
+
+
+  setTimeout(() => {
+
+    if (
+      typeof map !== "undefined"
+    ) {
+
+      map.invalidateSize();
+
+      map.setView(
+        posisiPenumpang,
+        15
+      );
+
+    }
+
+  }, 100);
+
+
+  console.log(
+    "NEXX: Pengemudi diterima. Menampilkan Pengemudi Ditemukan."
+  );
+
+}
+
+</script>
+  
 </body>
 </html>
