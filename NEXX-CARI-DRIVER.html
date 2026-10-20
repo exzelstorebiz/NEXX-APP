@@ -1915,24 +1915,55 @@ window.tampilkanRuteDriver = tampilkanRuteDriver;
 window.updatePosisiDriver = updatePosisiDriver;
 </script>
 
-  <script type="module">
+  <!-- =========================================================
+     NEXX - CARI DRIVER
+     SISTEM REALTIME:
+     - Firebase Authentication
+     - Order Firebase
+     - Lokasi pickup dari order
+     - Lokasi driver realtime
+     - Leaflet
+     - OSRM routing
+     - Marker driver bergerak
+     - Rute driver -> pickup diperbarui realtime
+     ========================================================= -->
+
+<!-- LEAFLET CSS -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+
+<!-- LEAFLET JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+
+<script type="module">
+
+/* =========================================================
+   FIREBASE
+   ========================================================= */
 
 import {
-  initializeApp,
-  getApps
-} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
   getAuth,
   onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
   getDatabase,
   ref,
-  onValue
-} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+  onValue,
+  off
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+
+/* =========================================================
+   KONFIGURASI FIREBASE
+   ========================================================= */
 
 const firebaseConfig = {
   apiKey: "AIzaSyCVPNfaUs8dmsr6n4oeb9WKGAlfsZ4nVfE",
@@ -1944,141 +1975,1559 @@ const firebaseConfig = {
   appId: "1:741542128730:web:d12c9246b9810216c0fc63"
 };
 
-
-const app = getApps().length
-  ? getApps()[0]
-  : initializeApp(firebaseConfig);
-
+const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
+
+
+/* =========================================================
+   UID
+   ========================================================= */
 
 const UID_PENUMPANG =
   "d6nrr1YHgoXRBaCIuMMuQm7YZra2";
 
+const UID_PENGEMUDI =
+  "p6iENr0Gt1gnSfdSv4FCz4brL803";
 
-onAuthStateChanged(auth, (user) => {
 
-  if (!user) {
-    return;
+/* =========================================================
+   VARIABEL SISTEM
+   ========================================================= */
+
+let map = null;
+
+let markerDriver = null;
+let markerPickup = null;
+
+let garisRute = null;
+
+let orderListener = null;
+let driverLocationListener = null;
+
+let orderId = null;
+
+let orderData = null;
+
+let posisiDriver = null;
+let posisiPickup = null;
+
+let routingSedangBerjalan = false;
+let routingTimer = null;
+
+let aplikasiSiap = false;
+
+
+/* =========================================================
+   REFERENSI ELEMENT
+   ========================================================= */
+
+const searchScreen =
+  document.getElementById("searchScreen");
+
+const driverScreen =
+  document.getElementById("driverScreen");
+
+const statusElement =
+  document.getElementById("status");
+
+
+/* =========================================================
+   UTILITAS STATUS
+   ========================================================= */
+
+function tampilkanStatus(teks) {
+
+  const el =
+    document.getElementById("status");
+
+  if (el) {
+    el.textContent = teks;
   }
 
-  if (user.uid !== UID_PENUMPANG) {
-    return;
+  console.log("[NEXX]", teks);
+}
+
+
+/* =========================================================
+   FORMAT JARAK
+   ========================================================= */
+
+function formatJarak(meter) {
+
+  if (!Number.isFinite(meter)) {
+    return "-";
   }
 
-  const orderId =
-    localStorage.getItem("nexxActiveOrderId");
+  if (meter < 1000) {
+    return Math.round(meter) + " m";
+  }
 
-  if (!orderId) {
-    console.log(
-      "NEXX: Tidak ada pesanan aktif."
+  return (
+    (meter / 1000).toFixed(1)
+    + " km"
+  );
+}
+
+
+/* =========================================================
+   FORMAT WAKTU
+   ========================================================= */
+
+function formatWaktu(detik) {
+
+  if (!Number.isFinite(detik)) {
+    return "-";
+  }
+
+  const menit =
+    Math.max(1, Math.round(detik / 60));
+
+  if (menit < 60) {
+    return menit + " menit";
+  }
+
+  const jam =
+    Math.floor(menit / 60);
+
+  const sisa =
+    menit % 60;
+
+  if (sisa === 0) {
+    return jam + " jam";
+  }
+
+  return jam + " jam " + sisa + " menit";
+}
+
+
+/* =========================================================
+   BUAT ELEMENT INFO NAVIGASI
+   Jika belum tersedia di HTML, dibuat otomatis.
+   ========================================================= */
+
+function siapkanInfoNavigasi() {
+
+  let panel =
+    document.getElementById("nexxLiveInfo");
+
+  if (panel) {
+    return panel;
+  }
+
+  panel =
+    document.createElement("div");
+
+  panel.id =
+    "nexxLiveInfo";
+
+  panel.innerHTML = `
+    <div style="
+      background:rgba(255,255,255,.96);
+      border-radius:18px;
+      padding:14px;
+      margin:12px 0;
+      box-shadow:0 8px 25px rgba(0,0,0,.12);
+      border:1px solid rgba(123,47,247,.12);
+      font-family:Arial,sans-serif;
+    ">
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:10px;
+      ">
+        <strong style="
+          color:#7B2FF7;
+          font-size:15px;
+        ">
+          🚗 Pengemudi menuju lokasi
+        </strong>
+
+        <span id="nexxGpsStatus"
+          style="
+            font-size:11px;
+            color:#16a34a;
+            font-weight:bold;
+          ">
+          ● LIVE
+        </span>
+      </div>
+
+      <div style="
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:8px;
+      ">
+
+        <div style="
+          background:#f7f4ff;
+          border-radius:12px;
+          padding:10px;
+        ">
+          <div style="
+            font-size:11px;
+            color:#777;
+          ">
+            Jarak
+          </div>
+
+          <div id="nexxJarak"
+            style="
+              font-size:18px;
+              font-weight:bold;
+              color:#7B2FF7;
+              margin-top:3px;
+            ">
+            -
+          </div>
+        </div>
+
+        <div style="
+          background:#fff7ed;
+          border-radius:12px;
+          padding:10px;
+        ">
+          <div style="
+            font-size:11px;
+            color:#777;
+          ">
+            Estimasi
+          </div>
+
+          <div id="nexxEta"
+            style="
+              font-size:18px;
+              font-weight:bold;
+              color:#FF8A00;
+              margin-top:3px;
+            ">
+            -
+          </div>
+        </div>
+
+      </div>
+
+      <div id="nexxNavigasiText"
+        style="
+          margin-top:10px;
+          font-size:12px;
+          color:#555;
+        ">
+        Menunggu lokasi pengemudi...
+      </div>
+
+    </div>
+  `;
+
+  const mapContainer =
+    document.querySelector(".map-container");
+
+  if (mapContainer) {
+
+    mapContainer.parentNode.insertBefore(
+      panel,
+      mapContainer
     );
-    return;
+
+  } else if (driverScreen) {
+
+    driverScreen.appendChild(panel);
+
   }
+
+  return panel;
+}
+
+
+/* =========================================================
+   TAMPILKAN DRIVER SCREEN
+   ========================================================= */
+
+function tampilkanDriverScreen() {
+
+  if (searchScreen) {
+    searchScreen.style.display = "none";
+  }
+
+  if (driverScreen) {
+    driverScreen.style.display = "block";
+  }
+
+  siapkanInfoNavigasi();
+
+  setTimeout(() => {
+
+    if (map) {
+      map.invalidateSize();
+    }
+
+  }, 300);
+}
+
+
+/* =========================================================
+   ICON DRIVER
+   ========================================================= */
+
+function buatIconDriver() {
+
+  return L.divIcon({
+
+    className:
+      "nexx-driver-marker",
+
+    html: `
+      <div style="
+        width:46px;
+        height:46px;
+        border-radius:50%;
+        background:#7B2FF7;
+        border:4px solid white;
+        box-shadow:
+          0 0 0 4px rgba(123,47,247,.20),
+          0 5px 15px rgba(0,0,0,.30);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:24px;
+      ">
+        🛵
+      </div>
+    `,
+
+    iconSize:[46,46],
+
+    iconAnchor:[23,23],
+
+    popupAnchor:[0,-23]
+
+  });
+}
+
+
+/* =========================================================
+   ICON PICKUP
+   ========================================================= */
+
+function buatIconPickup() {
+
+  return L.divIcon({
+
+    className:
+      "nexx-pickup-marker",
+
+    html: `
+      <div style="
+        width:42px;
+        height:42px;
+        border-radius:50% 50% 50% 0;
+        background:#FF8A00;
+        border:4px solid white;
+        box-shadow:
+          0 5px 15px rgba(0,0,0,.25);
+        transform:rotate(-45deg);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+      ">
+        <span style="
+          transform:rotate(45deg);
+          color:white;
+          font-size:20px;
+        ">
+          📍
+        </span>
+      </div>
+    `,
+
+    iconSize:[42,42],
+
+    iconAnchor:[21,42],
+
+    popupAnchor:[0,-42]
+
+  });
+}
+
+
+/* =========================================================
+   INISIALISASI MAP
+   ========================================================= */
+
+function buatMap() {
+
+  const mapElement =
+    document.getElementById("map");
+
+  if (!mapElement) {
+
+    console.error(
+      "Element #map tidak ditemukan."
+    );
+
+    return false;
+  }
+
+  if (map) {
+
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 200);
+
+    return true;
+  }
+
+
+  map =
+    L.map("map", {
+
+      zoomControl:true,
+
+      attributionControl:true
+
+    });
+
+
+  L.tileLayer(
+
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+
+    {
+      maxZoom:19,
+
+      attribution:
+        "&copy; OpenStreetMap contributors"
+    }
+
+  ).addTo(map);
+
+
+  map.setView(
+    [-6.982,110.065],
+    15
+  );
+
+
+  return true;
+}
+
+
+/* =========================================================
+   SET POSISI PICKUP
+   ========================================================= */
+
+function setPosisiPickup(lat,lng) {
+
+  lat = Number(lat);
+  lng = Number(lng);
+
+  if (
+    !Number.isFinite(lat) ||
+    !Number.isFinite(lng)
+  ) {
+
+    console.error(
+      "Koordinat pickup tidak valid:",
+      lat,
+      lng
+    );
+
+    return false;
+  }
+
+
+  posisiPickup =
+    [lat,lng];
+
+
+  if (!map) {
+    buatMap();
+  }
+
+
+  if (!markerPickup) {
+
+    markerPickup =
+      L.marker(
+
+        posisiPickup,
+
+        {
+          icon:
+            buatIconPickup()
+        }
+
+      )
+
+      .addTo(map)
+
+      .bindPopup(
+        "📍 Lokasi Penjemputan"
+      );
+
+  } else {
+
+    markerPickup.setLatLng(
+      posisiPickup
+    );
+
+  }
+
 
   console.log(
-    "NEXX: Memantau pesanan:",
-    orderId
+    "Pickup:",
+    posisiPickup
   );
+
+
+  return true;
+}
+
+
+/* =========================================================
+   SET POSISI DRIVER
+   ========================================================= */
+
+function setPosisiDriver(lat,lng) {
+
+  lat = Number(lat);
+  lng = Number(lng);
+
+  if (
+    !Number.isFinite(lat) ||
+    !Number.isFinite(lng)
+  ) {
+
+    console.error(
+      "Koordinat driver tidak valid:",
+      lat,
+      lng
+    );
+
+    return false;
+  }
+
+
+  posisiDriver =
+    [lat,lng];
+
+
+  if (!map) {
+    buatMap();
+  }
+
+
+  if (!markerDriver) {
+
+    markerDriver =
+      L.marker(
+
+        posisiDriver,
+
+        {
+          icon:
+            buatIconDriver()
+        }
+
+      )
+
+      .addTo(map)
+
+      .bindPopup(
+        "🚗 Pengemudi NEXX"
+      );
+
+  } else {
+
+    markerDriver.setLatLng(
+      posisiDriver
+    );
+
+  }
+
+
+  updateInfoGps();
+
+  jadwalkanRouting();
+
+
+  return true;
+}
+
+
+/* =========================================================
+   INFO GPS
+   ========================================================= */
+
+function updateInfoGps() {
+
+  const el =
+    document.getElementById(
+      "nexxGpsStatus"
+    );
+
+  if (el) {
+
+    el.textContent =
+      "● LIVE";
+
+    el.style.color =
+      "#16a34a";
+  }
+}
+
+
+/* =========================================================
+   HITUNG RUTE
+   Driver -> Pickup
+   ========================================================= */
+
+async function hitungRute() {
+
+  if (
+    !map ||
+    !posisiDriver ||
+    !posisiPickup
+  ) {
+
+    return;
+  }
+
+
+  if (routingSedangBerjalan) {
+
+    return;
+  }
+
+
+  routingSedangBerjalan = true;
+
+
+  try {
+
+    const lonDriver =
+      posisiDriver[1];
+
+    const latDriver =
+      posisiDriver[0];
+
+    const lonPickup =
+      posisiPickup[1];
+
+    const latPickup =
+      posisiPickup[0];
+
+
+    const url =
+      "https://router.project-osrm.org/route/v1/driving/"
+      +
+      lonDriver
+      +
+      ","
+      +
+      latDriver
+      +
+      ";"
+      +
+      lonPickup
+      +
+      ","
+      +
+      latPickup
+      +
+      "?overview=full&geometries=geojson";
+
+
+    const response =
+      await fetch(url);
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        "OSRM HTTP " +
+        response.status
+      );
+    }
+
+
+    const data =
+      await response.json();
+
+
+    if (
+      !data.routes ||
+      !data.routes.length
+    ) {
+
+      throw new Error(
+        "Rute tidak ditemukan."
+      );
+    }
+
+
+    const rute =
+      data.routes[0];
+
+
+    if (garisRute) {
+
+      map.removeLayer(
+        garisRute
+      );
+
+      garisRute = null;
+    }
+
+
+    garisRute =
+      L.geoJSON(
+
+        rute.geometry,
+
+        {
+
+          style: {
+
+            color:"#7B2FF7",
+
+            weight:6,
+
+            opacity:.90,
+
+            lineCap:"round",
+
+            lineJoin:"round"
+          }
+
+        }
+
+      ).addTo(map);
+
+
+    const jarak =
+      rute.distance;
+
+    const durasi =
+      rute.duration;
+
+
+    const jarakEl =
+      document.getElementById(
+        "nexxJarak"
+      );
+
+    const etaEl =
+      document.getElementById(
+        "nexxEta"
+      );
+
+    const teksEl =
+      document.getElementById(
+        "nexxNavigasiText"
+      );
+
+
+    if (jarakEl) {
+
+      jarakEl.textContent =
+        formatJarak(jarak);
+    }
+
+
+    if (etaEl) {
+
+      etaEl.textContent =
+        formatWaktu(durasi);
+    }
+
+
+    if (teksEl) {
+
+      teksEl.textContent =
+        "Pengemudi sedang menuju lokasi penjemputan.";
+    }
+
+
+    console.log(
+      "RUTE:",
+      formatJarak(jarak),
+      formatWaktu(durasi)
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Gagal menghitung rute:",
+      error
+    );
+
+
+    const teksEl =
+      document.getElementById(
+        "nexxNavigasiText"
+      );
+
+    if (teksEl) {
+
+      teksEl.textContent =
+        "Rute sedang diperbarui...";
+    }
+
+
+  } finally {
+
+    routingSedangBerjalan =
+      false;
+  }
+}
+
+
+/* =========================================================
+   ROUTING DEBOUNCE
+   Supaya OSRM tidak dipanggil terlalu cepat
+   ========================================================= */
+
+function jadwalkanRouting() {
+
+  clearTimeout(
+    routingTimer
+  );
+
+
+  routingTimer =
+    setTimeout(() => {
+
+      hitungRute();
+
+    },800);
+}
+
+
+/* =========================================================
+   FIT MAP KE DRIVER + PICKUP
+   ========================================================= */
+
+function fokusKeDriverDanPickup() {
+
+  if (
+    !map ||
+    !posisiDriver ||
+    !posisiPickup
+  ) {
+
+    return;
+  }
+
+
+  const bounds =
+    L.latLngBounds([
+
+      posisiDriver,
+
+      posisiPickup
+
+    ]);
+
+
+  map.fitBounds(
+
+    bounds,
+
+    {
+      padding:[45,45],
+
+      maxZoom:17
+    }
+
+  );
+}
+
+
+/* =========================================================
+   AMBIL KOORDINAT PICKUP DARI ORDER
+   ========================================================= */
+
+function bacaKoordinatPickup(order) {
+
+  if (!order) {
+
+    return false;
+  }
+
+
+  let lat =
+    order.pickupLat;
+
+  let lng =
+    order.pickupLng;
+
+
+  /*
+    Mendukung beberapa kemungkinan struktur
+    agar lebih tahan terhadap perubahan.
+  */
+
+  if (
+    (!lat || !lng) &&
+    order.pickupLocation
+  ) {
+
+    lat =
+      order.pickupLocation.lat;
+
+    lng =
+      order.pickupLocation.lng;
+  }
+
+
+  if (
+    (!lat || !lng) &&
+    order.pickupCoordinates
+  ) {
+
+    lat =
+      order.pickupCoordinates.lat;
+
+    lng =
+      order.pickupCoordinates.lng;
+  }
+
+
+  if (
+    !Number.isFinite(Number(lat)) ||
+    !Number.isFinite(Number(lng))
+  ) {
+
+    tampilkanStatus(
+      "Lokasi penjemputan belum memiliki koordinat."
+    );
+
+    console.error(
+      "Order tidak memiliki pickupLat/pickupLng:",
+      order
+    );
+
+    return false;
+  }
+
+
+  return setPosisiPickup(
+    Number(lat),
+    Number(lng)
+  );
+}
+
+
+/* =========================================================
+   MULAI MAP SETELAH ORDER TERSEDIA
+   ========================================================= */
+
+function mulaiMap() {
+
+  if (!buatMap()) {
+    return;
+  }
+
+
+  if (orderData) {
+
+    bacaKoordinatPickup(
+      orderData
+    );
+  }
+
+
+  if (posisiDriver) {
+
+    setPosisiDriver(
+      posisiDriver[0],
+      posisiDriver[1]
+    );
+  }
+
+
+  if (
+    posisiDriver &&
+    posisiPickup
+  ) {
+
+    fokusKeDriverDanPickup();
+
+    hitungRute();
+  }
+
+
+  setTimeout(() => {
+
+    if (map) {
+      map.invalidateSize();
+    }
+
+  },500);
+}
+
+
+/* =========================================================
+   MONITOR ORDER
+   ========================================================= */
+
+function mulaiPantauOrder() {
+
+  if (!orderId) {
+
+    tampilkanStatus(
+      "Pesanan aktif tidak ditemukan."
+    );
+
+    return;
+  }
+
+
+  if (orderListener) {
+
+    off(
+      ref(db,"orders/" + orderId),
+      "value",
+      orderListener
+    );
+
+    orderListener = null;
+  }
 
 
   const orderRef =
-    ref(db, "orders/" + orderId);
-
-
-  onValue(
-    orderRef,
-    (snapshot) => {
-
-      if (!snapshot.exists()) {
-        return;
-      }
-
-      const pesanan =
-        snapshot.val();
-
-      console.log(
-        "NEXX: Status pesanan:",
-        pesanan.status
-      );
-
-
-      if (
-        pesanan.status === "ACCEPTED"
-      ) {
-
-        tampilkanPengemudiDitemukan();
-
-      }
-
-    },
-    (error) => {
-
-      console.error(
-        "NEXX: Gagal memantau pesanan:",
-        error
-      );
-
-    }
-  );
-
-});
-
-
-function tampilkanPengemudiDitemukan() {
-
-  const searchScreen =
-    document.getElementById("searchScreen");
-
-  const driverScreen =
-    document.getElementById("driverScreen");
-
-
-  if (!searchScreen || !driverScreen) {
-    console.error(
-      "NEXX: Elemen layar tidak ditemukan."
+    ref(
+      db,
+      "orders/" + orderId
     );
+
+
+  orderListener =
+    onValue(
+
+      orderRef,
+
+      snapshot => {
+
+        if (!snapshot.exists()) {
+
+          tampilkanStatus(
+            "Pesanan tidak ditemukan."
+          );
+
+          return;
+        }
+
+
+        orderData =
+          snapshot.val();
+
+
+        console.log(
+          "ORDER REALTIME:",
+          orderData
+        );
+
+
+        const status =
+          orderData.status;
+
+
+        /*
+          Pickup diambil dari Firebase
+        */
+
+        bacaKoordinatPickup(
+          orderData
+        );
+
+
+        /*
+          Status SEARCHING
+        */
+
+        if (
+          status === "SEARCHING"
+        ) {
+
+          if (searchScreen) {
+
+            searchScreen.style.display =
+              "block";
+          }
+
+          if (driverScreen) {
+
+            driverScreen.style.display =
+              "none";
+          }
+
+          tampilkanStatus(
+            "Mencari pengemudi..."
+          );
+
+          return;
+        }
+
+
+        /*
+          Driver menerima order
+        */
+
+        if (
+          status === "ACCEPTED" ||
+          status === "TO_PICKUP"
+        ) {
+
+          tampilkanDriverScreen();
+
+
+          if (
+            orderData.driverUid
+          ) {
+
+            mulaiPantauLokasiDriver(
+              orderData.driverUid
+            );
+          }
+
+
+          if (
+            status === "ACCEPTED"
+          ) {
+
+            tampilkanStatus(
+              "Pengemudi ditemukan. Sedang menuju lokasi penjemputan."
+            );
+
+          } else {
+
+            tampilkanStatus(
+              "Pengemudi sedang menuju lokasi penjemputan."
+            );
+
+          }
+
+
+          mulaiMap();
+
+          return;
+        }
+
+
+        /*
+          Perjalanan dimulai
+        */
+
+        if (
+          status === "IN_TRIP"
+        ) {
+
+          tampilkanDriverScreen();
+
+          tampilkanStatus(
+            "Perjalanan sedang berlangsung."
+          );
+
+          /*
+            Untuk tahap berikutnya:
+            rute akan diubah menjadi
+            Driver -> Tujuan.
+          */
+
+          return;
+        }
+
+
+        /*
+          Selesai
+        */
+
+        if (
+          status === "COMPLETED"
+        ) {
+
+          tampilkanStatus(
+            "Perjalanan selesai. Terima kasih!"
+          );
+
+          return;
+        }
+
+
+        /*
+          Ditolak
+        */
+
+        if (
+          status === "REJECTED"
+        ) {
+
+          tampilkanStatus(
+            "Pesanan ditolak. Silakan coba kembali."
+          );
+
+          return;
+        }
+
+      },
+
+      error => {
+
+        console.error(
+          "Order listener error:",
+          error
+        );
+
+        tampilkanStatus(
+          "Gagal membaca pesanan realtime."
+        );
+      }
+
+    );
+}
+
+
+/* =========================================================
+   MONITOR LOKASI DRIVER REALTIME
+   ========================================================= */
+
+function mulaiPantauLokasiDriver(
+  driverUid
+) {
+
+  if (!driverUid) {
+
+    console.error(
+      "driverUid kosong."
+    );
+
     return;
   }
 
 
-  /* =========================
-     PINDAH KE LAYAR DRIVER
-  ========================= */
+  /*
+    Hentikan listener lama
+  */
 
-  searchScreen.style.display = "none";
+  if (driverLocationListener) {
 
-  driverScreen.style.display = "flex";
+    const oldUid =
+      mulaiPantauLokasiDriver.uidAktif;
 
+    if (oldUid) {
 
-  /* =========================
-     AKTIFKAN MAP
-  ========================= */
-
-  setTimeout(function() {
-
-    if (
-      typeof window.aktifkanMapDriver ===
-      "function"
-    ) {
-
-      window.aktifkanMapDriver();
-
-    } else {
-
-      console.error(
-        "NEXX: aktifkanMapDriver() belum tersedia."
+      off(
+        ref(
+          db,
+          "driverLocations/" +
+          oldUid
+        ),
+        "value",
+        driverLocationListener
       );
-
     }
 
-  }, 200);
+    driverLocationListener =
+      null;
+  }
 
 
-  console.log(
-    "NEXX: Pengemudi ditemukan."
-  );
+  mulaiPantauLokasiDriver.uidAktif =
+    driverUid;
+
+
+  const locationRef =
+    ref(
+      db,
+      "driverLocations/" +
+      driverUid
+    );
+
+
+  driverLocationListener =
+    onValue(
+
+      locationRef,
+
+      snapshot => {
+
+        if (!snapshot.exists()) {
+
+          const gpsEl =
+            document.getElementById(
+              "nexxGpsStatus"
+            );
+
+          if (gpsEl) {
+
+            gpsEl.textContent =
+              "● Menunggu GPS";
+
+            gpsEl.style.color =
+              "#f59e0b";
+          }
+
+          const teksEl =
+            document.getElementById(
+              "nexxNavigasiText"
+            );
+
+          if (teksEl) {
+
+            teksEl.textContent =
+              "Menunggu lokasi realtime pengemudi...";
+          }
+
+          return;
+        }
+
+
+        const lokasi =
+          snapshot.val();
+
+
+        /*
+          Mendukung struktur:
+          {
+            lat: ...,
+            lng: ...
+          }
+
+          atau:
+          {
+            latitude: ...,
+            longitude: ...
+          }
+        */
+
+        const lat =
+          lokasi.lat ??
+          lokasi.latitude;
+
+        const lng =
+          lokasi.lng ??
+          lokasi.longitude;
+
+
+        if (
+          !Number.isFinite(Number(lat)) ||
+          !Number.isFinite(Number(lng))
+        ) {
+
+          console.error(
+            "Data lokasi driver tidak valid:",
+            lokasi
+          );
+
+          return;
+        }
+
+
+        console.log(
+          "DRIVER LIVE:",
+          lat,
+          lng
+        );
+
+
+        /*
+          Ini inti pergerakan driver.
+        */
+
+        setPosisiDriver(
+          Number(lat),
+          Number(lng)
+        );
+
+
+        /*
+          Saat posisi pertama tersedia,
+          fokuskan map.
+        */
+
+        if (
+          posisiPickup &&
+          !garisRute
+        ) {
+
+          fokusKeDriverDanPickup();
+        }
+
+      },
+
+      error => {
+
+        console.error(
+          "Driver location listener error:",
+          error
+        );
+
+
+        const gpsEl =
+          document.getElementById(
+            "nexxGpsStatus"
+          );
+
+        if (gpsEl) {
+
+          gpsEl.textContent =
+            "● GPS ERROR";
+
+          gpsEl.style.color =
+            "#dc2626";
+        }
+      }
+
+    );
 }
+
+
+/* =========================================================
+   PUBLIC FUNCTION
+   ========================================================= */
+
+window.nexxMap =
+  () => map;
+
+
+/* =========================================================
+   AUTHENTICATION
+   ========================================================= */
+
+onAuthStateChanged(
+
+  auth,
+
+  user => {
+
+    if (!user) {
+
+      window.location.replace(
+        "Login-penumpang.html"
+      );
+
+      return;
+    }
+
+
+    /*
+      Pastikan yang membuka halaman
+      adalah akun penumpang.
+    */
+
+    if (
+      user.uid === UID_PENGEMUDI
+    ) {
+
+      window.location.replace(
+        "NEXX-DRIVER.html"
+      );
+
+      return;
+    }
+
+
+    if (
+      user.uid !== UID_PENUMPANG
+    ) {
+
+      tampilkanStatus(
+        "Akun tidak memiliki akses ke halaman penumpang."
+      );
+
+      return;
+    }
+
+
+    aplikasiSiap = true;
+
+
+    /*
+      Ambil order aktif
+      */
+
+    orderId =
+      localStorage.getItem(
+        "nexxActiveOrderId"
+      );
+
+
+    if (!orderId) {
+
+      tampilkanStatus(
+        "Belum ada pesanan aktif."
+      );
+
+      return;
+    }
+
+
+    console.log(
+      "ORDER ID:",
+      orderId
+    );
+
+
+    mulaiPantauOrder();
+
+  }
+
+);
+
+
+/* =========================================================
+   CLEANUP
+   ========================================================= */
+
+window.addEventListener(
+  "beforeunload",
+  () => {
+
+    if (orderListener && orderId) {
+
+      off(
+        ref(
+          db,
+          "orders/" + orderId
+        ),
+        "value",
+        orderListener
+      );
+    }
+
+
+    if (
+      driverLocationListener &&
+      mulaiPantauLokasiDriver.uidAktif
+    ) {
+
+      off(
+        ref(
+          db,
+          "driverLocations/" +
+          mulaiPantauLokasiDriver.uidAktif
+        ),
+        "value",
+        driverLocationListener
+      );
+    }
+
+  }
+);
+
+
+/* =========================================================
+   SELESAI
+   ========================================================= */
+
+console.log(
+  "NEXX CARI DRIVER REALTIME siap."
+);
 
 </script>
   
