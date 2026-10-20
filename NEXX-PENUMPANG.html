@@ -719,6 +719,29 @@ function pilihKendaraan(jenis) {
     return;
   }
 
+      async function cariKoordinat(alamat) {
+  const url =
+    "https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=id&q=" +
+    encodeURIComponent(alamat);
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error("Gagal mencari koordinat.");
+  }
+
+  const hasil = await response.json();
+
+  if (!hasil || hasil.length === 0) {
+    throw new Error("Lokasi tidak ditemukan: " + alamat);
+  }
+
+  return {
+    lat: parseFloat(hasil[0].lat),
+    lng: parseFloat(hasil[0].lon)
+  };
+}
+      
   navigator.geolocation.getCurrentPosition(
     function(posisi) {
       pickupLat = posisi.coords.latitude;
