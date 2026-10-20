@@ -821,6 +821,90 @@
     const destinationInput =
       document.getElementById("destinationInput");
 
+    destinationInput.addEventListener(
+  "change",
+  async function() {
+
+    const alamat =
+      destinationInput.value.trim();
+
+    if (alamat === "") {
+      return;
+    }
+
+    try {
+
+      tampilkanStatus(
+        "Mencari koordinat tujuan..."
+      );
+
+      const hasil =
+        await cariKoordinat(alamat);
+
+      tujuanLat =
+        hasil.lat;
+
+      tujuanLng =
+        hasil.lng;
+
+      koordinatTujuan.innerHTML =
+        "Latitude: " +
+        tujuanLat.toFixed(6) +
+        "<br>" +
+        "Longitude: " +
+        tujuanLng.toFixed(6);
+
+      if (tujuanMarker === null) {
+
+        tujuanMarker =
+          L.marker(
+            [
+              tujuanLat,
+              tujuanLng
+            ],
+            {
+              icon: iconTujuan
+            }
+          ).addTo(map);
+
+        tujuanMarker.bindPopup(
+          "Tujuan"
+        );
+
+      } else {
+
+        tujuanMarker.setLatLng(
+          [
+            tujuanLat,
+            tujuanLng
+          ]
+        );
+
+      }
+
+      await tampilkanRutePickupTujuan();
+
+      tampilkanStatus(
+        "Koordinat tujuan berhasil ditemukan."
+      );
+
+    } catch (error) {
+
+      console.error(
+        "TUJUAN ERROR:",
+        error
+      );
+
+      tampilkanStatus(
+        error.message ||
+        "Koordinat tujuan tidak ditemukan."
+      );
+
+    }
+
+  }
+);
+    
     const motorButton =
       document.getElementById("motorButton");
 
