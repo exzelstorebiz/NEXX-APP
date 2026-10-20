@@ -800,11 +800,36 @@ if (typeof window.kirimPesananKeFirebase !== "function") {
 status.textContent = "Mengirim pesanan...";  
   
 try {  
-  await window.kirimPesananKeFirebase({  
-    pickup: pickup,  
-    destination: destination,  
-    vehicle: kendaraanDipilih  
-  });  
+  await try {
+  // Jika pickup belum memiliki koordinat,
+  // berarti pickup dimasukkan secara manual.
+  if (pickupLat === null || pickupLng === null) {
+    const koordinatPickup = await cariKoordinat(pickup);
+
+    pickupLat = koordinatPickup.lat;
+    pickupLng = koordinatPickup.lng;
+  }
+
+  // Tujuan selalu dicari koordinatnya dari alamat yang diketik.
+  const koordinatTujuan = await cariKoordinat(destination);
+
+  tujuanLat = koordinatTujuan.lat;
+  tujuanLng = koordinatTujuan.lng;
+
+  await window.kirimPesananKeFirebase({
+    pickup: pickup,
+    pickupLat: pickupLat,
+    pickupLng: pickupLng,
+    destination: destination,
+    tujuanLat: tujuanLat,
+    tujuanLng: tujuanLng,
+    vehicle: kendaraanDipilih
+  });
+
+} catch (error) {
+  console.error(error);
+  alert(error.message || "Lokasi tidak berhasil ditemukan.");
+}
 } catch (error) {  
   console.error(error);  
   status.textContent = "Pesanan gagal dikirim. Silakan coba lagi.";  
