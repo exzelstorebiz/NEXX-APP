@@ -912,15 +912,22 @@ onAuthStateChanged(auth, async (user) => {
   
     const pesananRef = push(ref(db, "orders"));  
   
-    await set(pesananRef, {  
-      passengerUid: penggunaAktif.uid,  
-      driverUid: "",  
-      pickup: data.pickup,  
-      destination: data.destination,  
-      vehicle: data.vehicle,  
-      status: "SEARCHING",  
-      createdAt: serverTimestamp()  
-    });  
+    await set(pesananRef, {
+  passengerUid: penggunaAktif.uid,
+  driverUid: "",
+
+  pickup: data.pickup,
+  pickupLat: data.pickupLat,
+  pickupLng: data.pickupLng,
+
+  destination: data.destination,
+  tujuanLat: data.tujuanLat,
+  tujuanLng: data.tujuanLng,
+
+  vehicle: data.vehicle,
+  status: "SEARCHING",
+  createdAt: serverTimestamp()
+});
   
     localStorage.setItem("nexxActiveOrderId", pesananRef.key);  
   
