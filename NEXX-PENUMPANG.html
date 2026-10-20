@@ -584,7 +584,7 @@ class="small-button"
 type="button"
 onclick="ambilLokasi()"
 
-> ◎ GPS</button>
+>Posisi saya</button>
 
 
 
@@ -689,6 +689,10 @@ onclick="pilihKendaraan('MOBIL')"
     }  
   
   let kendaraanDipilih = "";  
+  let pickupLat = null;
+let pickupLng = null;
+let tujuanLat = null;
+let tujuanLng = null;
   
 function pilihKendaraan(jenis) {  
   kendaraanDipilih = jenis;  
@@ -709,6 +713,40 @@ function pilihKendaraan(jenis) {
     "Kendaraan dipilih: " + jenis +  
     ". Lengkapi lokasi dan tujuan perjalanan.";  
 }  
+    function ambilLokasi() {
+  if (!navigator.geolocation) {
+    alert("GPS tidak tersedia di perangkat ini.");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    function(posisi) {
+      pickupLat = posisi.coords.latitude;
+      pickupLng = posisi.coords.longitude;
+
+      const pickupInput = document.getElementById("pickup");
+
+      if (pickupInput) {
+        pickupInput.value = "Posisi saya sekarang";
+      }
+
+      alert(
+        "Lokasi berhasil didapatkan.\n" +
+        "Latitude: " + pickupLat + "\n" +
+        "Longitude: " + pickupLng
+      );
+    },
+    function(error) {
+      alert("Lokasi tidak berhasil didapatkan. Pastikan izin lokasi sudah diberikan.");
+      console.log(error);
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 15000,
+      maximumAge: 0
+    }
+  );
+}
     
     async function periksaPesanan() {  
       const pickup =  
