@@ -709,7 +709,7 @@ label{
 ===================================================== */
 
 let kendaraanDipilih = "";
-
+let javascriptSiap = true;
 
 /* POSISI HP / PENUMPANG */
 
@@ -1838,7 +1838,31 @@ document.addEventListener(
   "DOMContentLoaded",
   function(){
 
-    initMap();
+    try {
+
+      if (typeof L === "undefined") {
+
+        tampilkanStatus(
+          "❌ Peta belum berhasil dimuat. Periksa koneksi internet."
+        );
+
+        return;
+      }
+
+      initMap();
+
+    } catch (error) {
+
+      console.error(
+        "MAP ERROR:",
+        error
+      );
+
+      tampilkanStatus(
+        "❌ Terjadi kesalahan pada peta."
+      );
+
+    }
 
   }
 );
