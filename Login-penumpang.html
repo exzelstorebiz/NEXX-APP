@@ -242,10 +242,11 @@
     } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 
     import {
-      getAuth,
-      signInWithEmailAndPassword
-    } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-
+  getAuth,
+  setPersistence,
+  browserLocalPersistence,
+  signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
     const firebaseConfig = {
       apiKey: "AIzaSyCVPNfaUs8dmsr6n4oeb9WKGAlfsZ4nVfE",
       authDomain: "nexx-simulasi.firebaseapp.com",
@@ -274,11 +275,18 @@
       button.disabled = true;
 
       try {
-        const credential = await signInWithEmailAndPassword(
-          auth,
-          emailInput.value.trim(),
-          passwordInput.value
-        );
+
+  await setPersistence(
+    auth,
+    browserLocalPersistence
+  );
+
+  const credential =
+    await signInWithEmailAndPassword(
+      auth,
+      emailInput.value.trim(),
+      passwordInput.value
+    );
 
         message.textContent = "Login berhasil! Membuka halaman penumpang...";
 passwordInput.value = "";
