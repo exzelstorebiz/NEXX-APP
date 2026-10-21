@@ -2408,14 +2408,16 @@
             true;
 
 
-          if (
-            user.uid ===
-            UID_PENUMPANG
-          ) {
+          if (user.uid === UID_PENUMPANG) {
+    penggunaAktif = user;
+    authSudahSiap = true;
 
-            tampilkanStatus(
-              "Akun penumpang aktif. Silakan tentukan perjalanan."
-            );
+    orderButton.disabled = false;
+
+    tampilkanStatus("Akun penumpang aktif. Silakan tentukan perjalanan.");
+
+    pantauDriver();
+}
 
           } else {
 
