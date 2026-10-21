@@ -512,7 +512,6 @@ body{
     id="orderButton"
     class="order-button"
     type="button"
-    disabled
   >
     CARI DRIVER →
   </button>
@@ -1401,25 +1400,15 @@ function pilihKendaraan(
    VALIDASI PESANAN
 ===================================================== */
 
-async function periksaPesanan(){
+function periksaPesanan() {
 
-  const pickup =
-    pickupInput.value.trim();
+  console.log("TOMBOL CARI DRIVER BERHASIL DIKLIK");
 
+  tampilkanStatus(
+    "✅ TES BERHASIL — tombol CARI DRIVER bekerja."
+  );
 
-  const destination =
-    destinationInput.value.trim();
-
-
-  if(!pickup){
-
-    tampilkanStatus(
-      "Masukkan titik jemput."
-    );
-
-    return;
-
-  }
+}
 
 
   if(!destination){
@@ -2006,9 +1995,7 @@ window.kirimPesananKeFirebase =
 window.kirimPesananKeFirebase =
   async function(data){
 
-    
-
-
+   
     const pesananRef =
       push(
         ref(
