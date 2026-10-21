@@ -1797,19 +1797,27 @@ onAuthStateChanged(
   auth,
   function(user){
 
+    console.log(
+      "=== HASIL FIREBASE AUTH ==="
+    );
+
+    console.log(
+      "USER:",
+      user
+    );
+
+    console.log(
+      "UID:",
+      user ? user.uid : "TIDAK ADA USER"
+    );
+
+
     if(!user){
 
-      /*
-       * PENTING:
-       * Jangan redirect ke Login.
-       * Halaman tetap berada di NEXX Penumpang.
-       */
-
-      penggunaAktif =
-        null;
+      penggunaAktif = null;
 
       tampilkanStatus(
-        "⏳ Menunggu sesi akun penumpang..."
+        "⚠️ Firebase tidak menemukan sesi login."
       );
 
       return;
@@ -1822,14 +1830,11 @@ onAuthStateChanged(
       UID_PENUMPANG
     ){
 
-      penggunaAktif =
-        null;
-
-      orderButton.disabled =
-        true;
+      penggunaAktif = null;
 
       tampilkanStatus(
-        "⚠️ Akun ini bukan akun penumpang simulasi."
+        "⚠️ UID akun berbeda: " +
+        user.uid
       );
 
       return;
@@ -1841,16 +1846,8 @@ onAuthStateChanged(
       user;
 
 
-    /*
-     * AKUN PENUMPANG AKTIF
-     */
-
-    orderButton.disabled =
-      false;
-
-
     tampilkanStatus(
-      "✅ Akun penumpang aktif."
+      "✅ AUTH BERHASIL. UID PENUMPANG TERDETEKSI."
     );
 
 
