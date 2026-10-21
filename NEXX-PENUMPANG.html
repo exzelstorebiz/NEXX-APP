@@ -1,9 +1,18 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#7028F5">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
+<meta
+  name="theme-color"
+  content="#7028F5"
+>
 
 <title>NEXX Penumpang</title>
 
@@ -25,14 +34,10 @@ body{
   color:#202033;
 }
 
-/* =========================
-   HEADER
-========================= */
-
 .header{
-  position:relative;
-  overflow:hidden;
   padding:30px 22px 34px;
+  color:white;
+  border-radius:0 0 30px 30px;
 
   background:
     radial-gradient(
@@ -52,9 +57,8 @@ body{
       #29065f 100%
     );
 
-  color:white;
-  border-radius:0 0 30px 30px;
-  box-shadow:0 10px 28px rgba(91,32,190,.25);
+  box-shadow:
+    0 10px 28px rgba(91,32,190,.25);
 }
 
 .brand{
@@ -70,12 +74,7 @@ body{
 .subtitle{
   margin-top:8px;
   font-size:14px;
-  opacity:.95;
 }
-
-/* =========================
-   CONTAINER
-========================= */
 
 .container{
   max-width:600px;
@@ -83,274 +82,167 @@ body{
   padding:20px 16px 35px;
 }
 
-.welcome{
-  font-size:21px;
-  font-weight:800;
-  margin-bottom:5px;
-}
-
-.description{
-  color:#777487;
-  font-size:14px;
-  margin-bottom:22px;
-}
-
 .card{
   background:white;
   border-radius:20px;
   padding:20px;
   margin-bottom:17px;
-  box-shadow:0 5px 20px rgba(48,27,90,.07);
+
+  box-shadow:
+    0 5px 20px rgba(48,27,90,.07);
 }
 
 .card-title{
-  font-size:17px;
-  font-weight:800;
-  margin-bottom:16px;
+  font-size:22px;
+  font-weight:900;
+  margin-bottom:18px;
 }
 
-label{
-  display:block;
-  font-size:13px;
-  font-weight:bold;
-  color:#777487;
-  margin:14px 0 7px;
+.section-title{
+  margin-top:22px;
+  margin-bottom:8px;
+
+  font-size:15px;
+  font-weight:900;
+  color:#28144d;
 }
 
-/* =========================
-   LOCATION PANEL
-========================= */
-
-.location-panel{
-  display:flex;
-  align-items:center;
-  gap:8px;
-
-  padding:7px;
-
-  border:1px solid #e8e0fa;
-  border-radius:18px;
-
-  background:linear-gradient(
-    135deg,
-    #ffffff,
-    #faf7ff
-  );
-
-  box-shadow:
-    0 6px 18px rgba(77,38,145,.08);
+.location-box{
+  margin-bottom:15px;
 }
 
-.location-icon{
-  width:44px;
-  height:44px;
-
-  flex-shrink:0;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  border-radius:14px;
-
-  font-size:25px;
-}
-
-.pickup-icon{
-  color:#7028f5;
-  background:linear-gradient(
-    135deg,
-    #eee4ff,
-    #dfcaff
-  );
-}
-
-.destination-icon{
-  color:white;
-  background:linear-gradient(
-    135deg,
-    #ff9a00,
-    #ff6500
-  );
-}
-
-.location-input{
-  flex:1;
-  min-width:0;
-}
-
-.location-input input{
+.location-box input{
   width:100%;
-  padding:12px 10px;
 
-  border:1px solid #e3dcf5;
-  border-radius:12px;
+  padding:15px;
+
+  border:1px solid #ded7ed;
+  border-radius:15px;
 
   background:#faf9ff;
 
-  font-size:13px;
+  font-size:16px;
+
   outline:none;
 }
 
-.location-input input:focus{
+.location-box input:focus{
   border-color:#7028f5;
+
   box-shadow:
-    0 0 0 3px rgba(112,40,245,.09);
+    0 0 0 3px rgba(112,40,245,.10);
 }
 
-.small-button{
-  flex-shrink:0;
+.gps-button{
+  width:100%;
 
-  min-height:44px;
-  padding:0 12px;
+  margin-top:10px;
+
+  padding:15px;
 
   border:none;
-  border-radius:12px;
+  border-radius:15px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #8d2cff,
-      #4b0bea
-    );
+  background:#eee6ff;
 
-  color:white;
+  color:#5420a8;
 
-  font-size:12px;
+  font-size:15px;
   font-weight:900;
 
   cursor:pointer;
 }
 
-.small-button:active{
-  transform:scale(.96);
+.gps-button:active{
+  transform:scale(.98);
 }
 
-/* =========================
-   VEHICLE
-========================= */
+.coordinate{
+  margin-top:9px;
+
+  padding:13px;
+
+  border-radius:14px;
+
+  background:#f7f4ff;
+
+  color:#625977;
+
+  font-size:13px;
+
+  line-height:1.8;
+}
+
+.coordinate strong{
+  color:#4f2499;
+}
 
 .vehicle-title{
-  margin-top:25px;
+  margin-top:24px;
 
   font-size:16px;
   font-weight:900;
-
-  color:#241345;
 }
 
 .vehicle-options{
   display:grid;
-  grid-template-columns:1fr 1fr;
 
-  gap:13px;
+  grid-template-columns:
+    1fr 1fr;
 
-  margin-top:14px;
+  gap:12px;
+
+  margin-top:12px;
 }
 
-.vehicle-card{
-  min-height:190px;
+.vehicle{
+  padding:18px 10px;
 
-  border:1.5px solid #e2d8f8;
-  border-radius:22px;
-
-  background:
-    radial-gradient(
-      circle at 50% 15%,
-      rgba(112,40,245,.09),
-      transparent 45%
-    ),
-    linear-gradient(
-      145deg,
-      #ffffff,
-      #f8f5ff
-    );
-
-  color:#241345;
-
-  cursor:pointer;
-
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-
-  gap:9px;
-
-  transition:.2s;
-}
-
-.vehicle-card:active{
-  transform:scale(.97);
-}
-
-.vehicle-card.selected{
-  border:2px solid #792cff;
-
-  background:
-    radial-gradient(
-      circle at 50% 20%,
-      rgba(255,138,0,.19),
-      transparent 43%
-    ),
-    linear-gradient(
-      145deg,
-      #f5edff,
-      #e8d9ff
-    );
-
-  box-shadow:
-    0 0 0 3px rgba(121,44,255,.08),
-    0 9px 24px rgba(112,40,245,.19);
-}
-
-.vehicle-icon{
-  font-size:48px;
-}
-
-.vehicle-name{
-  font-size:18px;
-  font-weight:900;
-}
-
-.vehicle-desc{
-  font-size:11px;
-  color:#777087;
-}
-
-.vehicle-check{
-  width:27px;
-  height:27px;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  border:2px solid #d8cbed;
-  border-radius:50%;
+  border:2px solid #e1d9f2;
+  border-radius:18px;
 
   background:white;
 
-  font-size:16px;
+  text-align:center;
+
+  cursor:pointer;
+}
+
+.vehicle.selected{
+  border-color:#7028f5;
+
+  background:#f1e9ff;
+
+  box-shadow:
+    0 0 0 3px rgba(112,40,245,.08);
+}
+
+.vehicle-icon{
+  font-size:42px;
+}
+
+.vehicle-name{
+  margin-top:8px;
+
+  font-size:17px;
   font-weight:900;
 }
 
-.vehicle-card.selected .vehicle-check{
-  border-color:#792cff;
-  background:#792cff;
-  color:white;
-}
+.vehicle-check{
+  margin-top:8px;
 
-/* =========================
-   ORDER BUTTON
-========================= */
+  font-size:20px;
+  font-weight:900;
+
+  color:#7028f5;
+}
 
 .order-button{
   width:100%;
 
-  min-height:62px;
+  margin-top:22px;
 
-  margin-top:24px;
+  padding:18px;
 
   border:none;
   border-radius:17px;
@@ -365,68 +257,23 @@ label{
 
   color:white;
 
-  font-size:16px;
+  font-size:17px;
   font-weight:900;
 
   cursor:pointer;
-
-  box-shadow:
-    0 8px 20px rgba(255,115,0,.28);
 }
 
-.order-button:active{
-  transform:scale(.98);
+.order-button:disabled{
+  opacity:.45;
+  cursor:not-allowed;
 }
-
-/* =========================
-   COORDINATE INFO
-========================= */
-
-.coordinate-box{
-  margin-top:18px;
-
-  padding:13px;
-
-  border-radius:14px;
-
-  background:#f7f4ff;
-
-  font-size:12px;
-
-  line-height:1.7;
-
-  color:#5f5670;
-}
-
-.coordinate-title{
-  font-weight:900;
-  color:#5420a8;
-  margin-bottom:5px;
-}
-
-/* =========================
-   MAP
-========================= */
-
-#map{
-  width:100%;
-  height:380px;
-
-  border-radius:18px;
-
-  overflow:hidden;
-
-  margin-top:15px;
-}
-
-/* =========================
-   STATUS
-========================= */
 
 .status{
-  padding:13px;
+  margin-top:15px;
 
-  border-radius:12px;
+  padding:14px;
+
+  border-radius:13px;
 
   background:#f0ebff;
 
@@ -434,12 +281,19 @@ label{
 
   font-size:13px;
 
-  line-height:1.5;
+  line-height:1.6;
 }
 
-/* =========================
-   FOOTER
-========================= */
+#map{
+  width:100%;
+  height:380px;
+
+  margin-top:15px;
+
+  border-radius:18px;
+
+  overflow:hidden;
+}
 
 .footer{
   text-align:center;
@@ -453,22 +307,18 @@ label{
 
 @media(max-width:390px){
 
-  .vehicle-card{
-    min-height:175px;
-  }
-
   .vehicle-icon{
-    font-size:42px;
+    font-size:36px;
   }
 
-  .small-button{
-    padding:0 8px;
-    font-size:11px;
+  .card-title{
+    font-size:20px;
   }
 
 }
 
 </style>
+
 </head>
 
 <body>
@@ -480,7 +330,7 @@ label{
   </div>
 
   <div class="subtitle">
-    Simulasi perjalanan menuju mega proyek.
+    Perjalanan lebih mudah dimulai di sini.
   </div>
 
 </header>
@@ -488,261 +338,243 @@ label{
 
 <main class="container">
 
-  <div class="welcome">
-    Halo, Penumpang! 👋
-  </div>
 
-  <div class="description">
-    Tentukan perjalanan yang ingin kamu tuju.
+<section class="card">
+
+  <div class="card-title">
+    📍 Lokasi Perjalanan
   </div>
 
 
   <!-- =========================
-       PERJALANAN
+       POSISI SAYA
   ========================== -->
 
-  <section class="card">
+  <div class="section-title">
+    POSISI SAYA
+  </div>
 
-    <div class="card-title">
-      📍 Rencana Perjalanan
-    </div>
+  <div class="location-box">
 
-
-    <!-- PICKUP -->
-
-    <label for="pickup">
-      Lokasi penjemputan
-    </label>
-
-    <div class="location-panel">
-
-      <div class="location-icon pickup-icon">
-        ✥
-      </div>
-
-      <div class="location-input">
-
-        <input
-          id="pickup"
-          type="text"
-          placeholder="Lokasi penjemputan"
-        >
-
-      </div>
-
-      <button
-        class="small-button"
-        type="button"
-        onclick="ambilLokasiSaya()"
-      >
-        Posisi saya
-      </button>
-
-    </div>
-
-
-    <!-- TUJUAN -->
-
-    <label for="destination">
-      Tujuan perjalanan
-    </label>
-
-    <div class="location-panel">
-
-      <div class="location-icon destination-icon">
-        📍
-      </div>
-
-      <div class="location-input">
-
-        <input
-          id="destination"
-          type="text"
-          placeholder="Mau pergi ke mana?"
-        >
-
-      </div>
-
-    </div>
-
-
-    <!-- VEHICLE -->
-
-    <div class="vehicle-title">
-      Pilih Kendaraan
-    </div>
-
-    <div class="vehicle-options">
-
-      <button
-        type="button"
-        class="vehicle-card"
-        id="bikeCard"
-        onclick="pilihKendaraan('BIKE')"
-      >
-
-        <span class="vehicle-icon">
-          🏍️
-        </span>
-
-        <span class="vehicle-name">
-          BIKE
-        </span>
-
-        <span class="vehicle-desc">
-          Sepeda motor
-        </span>
-
-        <span
-          class="vehicle-check"
-          id="bikeCheck"
-        >
-          ○
-        </span>
-
-      </button>
-
-
-      <button
-        type="button"
-        class="vehicle-card"
-        id="carCard"
-        onclick="pilihKendaraan('MOBIL')"
-      >
-
-        <span class="vehicle-icon">
-          🚗
-        </span>
-
-        <span class="vehicle-name">
-          MOBIL
-        </span>
-
-        <span class="vehicle-desc">
-          Mobil penumpang
-        </span>
-
-        <span
-          class="vehicle-check"
-          id="carCheck"
-        >
-          ○
-        </span>
-
-      </button>
-
-    </div>
-
-
-    <!-- COORDINATE INFORMATION -->
-
-    <div
-      class="coordinate-box"
-      id="coordinateBox"
+    <input
+      id="posisiSaya"
+      type="text"
+      readonly
+      placeholder="Menunggu lokasi GPS..."
     >
-
-      <div class="coordinate-title">
-        📡 Data lokasi
-      </div>
-
-      Posisi saya:
-      belum tersedia<br>
-
-      Titik jemput:
-      belum tersedia<br>
-
-      Tujuan:
-      belum tersedia
-
-    </div>
-
-
-    <!-- ORDER -->
 
     <button
-      class="order-button"
+      id="gpsButton"
+      class="gps-button"
       type="button"
-      onclick="periksaPesanan()"
     >
-      CARI PENGEMUDI →
+      📍 GUNAKAN POSISI SAYA
     </button>
 
-  </section>
+  </div>
+
+  <div
+    id="koordinatSaya"
+    class="coordinate"
+  >
+
+    Latitude: -<br>
+    Longitude: -
+
+  </div>
 
 
   <!-- =========================
-       DRIVER / MAP
+       TITIK JEMPUT
   ========================== -->
 
-  <section class="card">
-
-    <div class="card-title">
-      🗺️ Posisi & Navigasi
-    </div>
-
-    <div
-      class="status"
-      id="status"
-    >
-      Belum ada pesanan.
-    </div>
-
-    <div id="map"></div>
-
-  </section>
-
-
-  <div class="footer">
-    NEXX SIMULATION · By SUHENDRO
+  <div class="section-title">
+    TITIK JEMPUT
   </div>
+
+  <div class="location-box">
+
+    <input
+      id="pickup"
+      type="text"
+      placeholder="Contoh: Alun-alun Bumiayu"
+      autocomplete="off"
+    >
+
+  </div>
+
+  <div
+    id="koordinatPickup"
+    class="coordinate"
+  >
+
+    Latitude: -<br>
+    Longitude: -
+
+  </div>
+
+
+  <!-- =========================
+       TUJUAN
+  ========================== -->
+
+  <div class="section-title">
+    TUJUAN
+  </div>
+
+  <div class="location-box">
+
+    <input
+      id="destination"
+      type="text"
+      placeholder="Masukkan tujuan perjalanan"
+      autocomplete="off"
+    >
+
+  </div>
+
+  <div
+    id="koordinatTujuan"
+    class="coordinate"
+  >
+
+    Latitude: -<br>
+    Longitude: -
+
+  </div>
+
+
+  <!-- =========================
+       KENDARAAN
+  ========================== -->
+
+  <div class="vehicle-title">
+    PILIH KENDARAAN
+  </div>
+
+  <div class="vehicle-options">
+
+    <button
+      id="bikeButton"
+      class="vehicle"
+      type="button"
+    >
+
+      <div class="vehicle-icon">
+        🏍️
+      </div>
+
+      <div class="vehicle-name">
+        BIKE
+      </div>
+
+      <div
+        id="bikeCheck"
+        class="vehicle-check"
+      >
+        ○
+      </div>
+
+    </button>
+
+
+    <button
+      id="carButton"
+      class="vehicle"
+      type="button"
+    >
+
+      <div class="vehicle-icon">
+        🚗
+      </div>
+
+      <div class="vehicle-name">
+        MOBIL
+      </div>
+
+      <div
+        id="carCheck"
+        class="vehicle-check"
+      >
+        ○
+      </div>
+
+    </button>
+
+  </div>
+
+
+  <!-- =========================
+       CARI DRIVER
+  ========================== -->
+
+  <button
+    id="orderButton"
+    class="order-button"
+    type="button"
+    disabled
+  >
+    CARI DRIVER →
+  </button>
+
+
+  <div
+    id="status"
+    class="status"
+  >
+    Menyiapkan halaman penumpang...
+  </div>
+
+</section>
+
+
+<!-- =========================
+     MAP
+========================== -->
+
+<section class="card">
+
+  <div class="card-title">
+    🗺️ Posisi & Navigasi
+  </div>
+
+  <div id="map"></div>
+
+</section>
+
+
+<div class="footer">
+  NEXX SIMULATION · By SUHENDRO
+</div>
+
 
 </main>
 
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+></script>
 
 
 <script>
 
 /* =====================================================
-   VARIABEL LOKASI
+   DATA LOKASI
 ===================================================== */
-
-let kendaraanDipilih = "";
-let javascriptSiap = true;
-
-/* POSISI HP / PENUMPANG */
 
 let myLat = null;
 let myLng = null;
 
-
-/* TITIK JEMPUT */
-
 let pickupLat = null;
 let pickupLng = null;
-
-
-/* TUJUAN */
 
 let tujuanLat = null;
 let tujuanLng = null;
 
-
-/* POSISI DRIVER */
-
 let driverLat = null;
 let driverLng = null;
 
-
-/* ORDER */
-
-let activeOrderId = null;
-
-
-/* =====================================================
-   MAP
-===================================================== */
+let kendaraanDipilih = "";
 
 let map = null;
 
@@ -755,21 +587,91 @@ let routeDriverPickup = null;
 
 
 /* =====================================================
-   INISIALISASI MAP
+   ELEMENT
+===================================================== */
+
+const posisiSaya =
+  document.getElementById(
+    "posisiSaya"
+  );
+
+const pickupInput =
+  document.getElementById(
+    "pickup"
+  );
+
+const destinationInput =
+  document.getElementById(
+    "destination"
+  );
+
+const gpsButton =
+  document.getElementById(
+    "gpsButton"
+  );
+
+const bikeButton =
+  document.getElementById(
+    "bikeButton"
+  );
+
+const carButton =
+  document.getElementById(
+    "carButton"
+  );
+
+const orderButton =
+  document.getElementById(
+    "orderButton"
+  );
+
+const statusBox =
+  document.getElementById(
+    "status"
+  );
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+function tampilkanStatus(pesan){
+
+  statusBox.textContent =
+    pesan;
+
+}
+
+
+/* =====================================================
+   MAP
 ===================================================== */
 
 function initMap(){
 
-  map = L.map("map").setView(
-    [-7.8, 110.4],
-    13
-  );
+  if(typeof L === "undefined"){
+
+    tampilkanStatus(
+      "Peta belum berhasil dimuat."
+    );
+
+    return;
+
+  }
+
+  map =
+    L.map("map").setView(
+      [-7.8,110.4],
+      13
+    );
+
 
   L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     {
       maxZoom:19,
-      attribution:"© OpenStreetMap"
+      attribution:
+        "© OpenStreetMap"
     }
   ).addTo(map);
 
@@ -777,140 +679,151 @@ function initMap(){
 
 
 /* =====================================================
-   BUAT ICON
+   ICON
 ===================================================== */
 
-const iconSaya = L.divIcon({
+function buatIcon(
+  warna,
+  teks,
+  ukuran=36
+){
 
-  className:"",
+  return L.divIcon({
 
-  html:`
-    <div style="
-      width:36px;
-      height:36px;
-      border-radius:50%;
-      background:#7028F5;
-      border:4px solid white;
-      box-shadow:0 3px 12px rgba(0,0,0,.35);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:white;
-      font-size:18px;
-    ">
-      ●
-    </div>
-  `,
+    className:"",
 
-  iconSize:[36,36],
-  iconAnchor:[18,18]
+    html:`
+      <div style="
+        width:${ukuran}px;
+        height:${ukuran}px;
+        border-radius:50%;
+        background:${warna};
+        border:4px solid white;
+        box-shadow:0 3px 12px rgba(0,0,0,.35);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color:white;
+        font-weight:900;
+        font-size:${Math.round(ukuran/2.2)}px;
+      ">
+        ${teks}
+      </div>
+    `,
 
-});
+    iconSize:[
+      ukuran,
+      ukuran
+    ],
 
+    iconAnchor:[
+      ukuran/2,
+      ukuran/2
+    ]
 
-const iconPickup = L.divIcon({
+  });
 
-  className:"",
-
-  html:`
-    <div style="
-      width:36px;
-      height:36px;
-      border-radius:50%;
-      background:#7028F5;
-      border:4px solid white;
-      box-shadow:0 3px 12px rgba(0,0,0,.35);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:white;
-      font-size:16px;
-      font-weight:bold;
-    ">
-      A
-    </div>
-  `,
-
-  iconSize:[36,36],
-  iconAnchor:[18,18]
-
-});
-
-
-const iconTujuan = L.divIcon({
-
-  className:"",
-
-  html:`
-    <div style="
-      width:36px;
-      height:36px;
-      border-radius:50%;
-      background:#FF8A00;
-      border:4px solid white;
-      box-shadow:0 3px 12px rgba(0,0,0,.35);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:white;
-      font-size:17px;
-      font-weight:bold;
-    ">
-      B
-    </div>
-  `,
-
-  iconSize:[36,36],
-  iconAnchor:[18,18]
-
-});
-
-
-const iconDriver = L.divIcon({
-
-  className:"",
-
-  html:`
-    <div style="
-      width:42px;
-      height:42px;
-      border-radius:50%;
-      background:#FF8A00;
-      border:4px solid white;
-      box-shadow:0 3px 15px rgba(0,0,0,.4);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:21px;
-    ">
-      🚗
-    </div>
-  `,
-
-  iconSize:[42,42],
-  iconAnchor:[21,21]
-
-});
+}
 
 
 /* =====================================================
-   POSISI SAYA
+   TAMPILKAN KOORDINAT
+===================================================== */
+
+function tampilkanKoordinat(){
+
+  document.getElementById(
+    "koordinatSaya"
+  ).innerHTML =
+
+    "Latitude: " +
+
+    (
+      myLat !== null
+      ? myLat.toFixed(6)
+      : "-"
+    )
+
+    +
+
+    "<br>Longitude: " +
+
+    (
+      myLng !== null
+      ? myLng.toFixed(6)
+      : "-"
+    );
+
+
+  document.getElementById(
+    "koordinatPickup"
+  ).innerHTML =
+
+    "Latitude: " +
+
+    (
+      pickupLat !== null
+      ? pickupLat.toFixed(6)
+      : "-"
+    )
+
+    +
+
+    "<br>Longitude: " +
+
+    (
+      pickupLng !== null
+      ? pickupLng.toFixed(6)
+      : "-"
+    );
+
+
+  document.getElementById(
+    "koordinatTujuan"
+  ).innerHTML =
+
+    "Latitude: " +
+
+    (
+      tujuanLat !== null
+      ? tujuanLat.toFixed(6)
+      : "-"
+    )
+
+    +
+
+    "<br>Longitude: " +
+
+    (
+      tujuanLng !== null
+      ? tujuanLng.toFixed(6)
+      : "-"
+    );
+
+}
+
+
+/* =====================================================
+   GPS
 ===================================================== */
 
 function ambilLokasiSaya(){
 
-  if(!navigator.geolocation){
+  if(
+    !navigator.geolocation
+  ){
 
     tampilkanStatus(
-      "Perangkat tidak mendukung GPS."
+      "❌ Perangkat tidak mendukung GPS."
     );
 
     return;
+
   }
 
 
   tampilkanStatus(
-    "📡 Sedang mengambil posisi saya..."
+    "📡 Sedang mengambil lokasi GPS..."
   );
 
 
@@ -918,61 +831,88 @@ function ambilLokasiSaya(){
 
     function(position){
 
-      myLat = position.coords.latitude;
-      myLng = position.coords.longitude;
+      myLat =
+        position.coords.latitude;
+
+      myLng =
+        position.coords.longitude;
 
 
-      /*
-       * Jika posisi saya digunakan
-       * sebagai titik jemput,
-       * maka koordinat pickup sama.
-       */
+      pickupLat =
+        myLat;
 
-      pickupLat = myLat;
-      pickupLng = myLng;
+      pickupLng =
+        myLng;
 
 
-      document.getElementById(
-        "pickup"
-      ).value =
+      posisiSaya.value =
+        "Posisi saya sekarang";
+
+
+      pickupInput.value =
         "Posisi saya sekarang";
 
 
       tampilkanKoordinat();
 
 
-      tampilkanPosisiSaya();
+      tampilkanMarkerSaya();
 
 
-      tampilkanPickup();
+      tampilkanMarkerPickup();
 
 
-      map.setView(
-        [myLat,myLng],
-        16
-      );
+      if(map){
+
+        map.setView(
+          [myLat,myLng],
+          16
+        );
+
+      }
 
 
       tampilkanStatus(
-        "✅ Posisi saya berhasil diperoleh. Silakan masukkan tujuan."
+        "✅ GPS berhasil ditemukan."
       );
 
     },
-
 
     function(error){
 
+      let pesan =
+        "GPS gagal.";
+
+      if(error.code === 1){
+
+        pesan =
+          "❌ Izin lokasi ditolak. Aktifkan izin lokasi untuk browser.";
+
+      }
+
+      else if(error.code === 2){
+
+        pesan =
+          "❌ Lokasi belum tersedia. Pastikan GPS aktif.";
+
+      }
+
+      else if(error.code === 3){
+
+        pesan =
+          "❌ GPS terlalu lama mendapatkan lokasi.";
+
+      }
+
       tampilkanStatus(
-        "❌ GPS gagal: " +
-        error.message
+        pesan
       );
 
     },
 
-
     {
       enableHighAccuracy:true,
-      timeout:15000,
+      timeout:20000,
       maximumAge:0
     }
 
@@ -982,28 +922,452 @@ function ambilLokasiSaya(){
 
 
 /* =====================================================
-   PILIH KENDARAAN
+   MARKER SAYA
 ===================================================== */
 
-function pilihKendaraan(jenis){
+function tampilkanMarkerSaya(){
 
-  kendaraanDipilih = jenis;
+  if(
+    !map ||
+    myLat === null ||
+    myLng === null
+  ){
+
+    return;
+
+  }
 
 
-  const bikeCard =
-    document.getElementById("bikeCard");
-
-  const carCard =
-    document.getElementById("carCard");
+  const posisi =
+    [myLat,myLng];
 
 
-  bikeCard.classList.toggle(
+  if(markerSaya){
+
+    markerSaya.setLatLng(
+      posisi
+    );
+
+  }
+
+  else{
+
+    markerSaya =
+      L.marker(
+        posisi,
+        {
+          icon:
+            buatIcon(
+              "#7028F5",
+              "●"
+            )
+        }
+      )
+      .addTo(map)
+      .bindPopup(
+        "Posisi saya"
+      );
+
+  }
+
+}
+
+
+/* =====================================================
+   MARKER PICKUP
+===================================================== */
+
+function tampilkanMarkerPickup(){
+
+  if(
+    !map ||
+    pickupLat === null ||
+    pickupLng === null
+  ){
+
+    return;
+
+  }
+
+
+  const posisi =
+    [pickupLat,pickupLng];
+
+
+  if(markerPickup){
+
+    markerPickup.setLatLng(
+      posisi
+    );
+
+  }
+
+  else{
+
+    markerPickup =
+      L.marker(
+        posisi,
+        {
+          icon:
+            buatIcon(
+              "#7028F5",
+              "A"
+            )
+        }
+      )
+      .addTo(map)
+      .bindPopup(
+        "Titik jemput"
+      );
+
+  }
+
+}
+
+
+/* =====================================================
+   MARKER TUJUAN
+===================================================== */
+
+function tampilkanMarkerTujuan(){
+
+  if(
+    !map ||
+    tujuanLat === null ||
+    tujuanLng === null
+  ){
+
+    return;
+
+  }
+
+
+  const posisi =
+    [tujuanLat,tujuanLng];
+
+
+  if(markerTujuan){
+
+    markerTujuan.setLatLng(
+      posisi
+    );
+
+  }
+
+  else{
+
+    markerTujuan =
+      L.marker(
+        posisi,
+        {
+          icon:
+            buatIcon(
+              "#FF8A00",
+              "B"
+            )
+        }
+      )
+      .addTo(map)
+      .bindPopup(
+        "Tujuan"
+      );
+
+  }
+
+}
+
+
+/* =====================================================
+   MARKER DRIVER
+===================================================== */
+
+function tampilkanMarkerDriver(){
+
+  if(
+    !map ||
+    driverLat === null ||
+    driverLng === null
+  ){
+
+    return;
+
+  }
+
+
+  const posisi =
+    [driverLat,driverLng];
+
+
+  if(markerDriver){
+
+    markerDriver.setLatLng(
+      posisi
+    );
+
+  }
+
+  else{
+
+    markerDriver =
+      L.marker(
+        posisi,
+        {
+          icon:
+            buatIcon(
+              "#FF8A00",
+              "🚗",
+              42
+            )
+        }
+      )
+      .addTo(map)
+      .bindPopup(
+        "Posisi driver"
+      );
+
+  }
+
+}
+
+
+/* =====================================================
+   GEOCODING
+===================================================== */
+
+async function cariKoordinat(
+  alamat
+){
+
+  const url =
+    "https://nominatim.openstreetmap.org/search" +
+
+    "?format=json" +
+
+    "&limit=1" +
+
+    "&countrycodes=id" +
+
+    "&q=" +
+
+    encodeURIComponent(
+      alamat
+    );
+
+
+  const response =
+    await fetch(
+      url,
+      {
+        headers:{
+          "Accept":
+            "application/json"
+        }
+      }
+    );
+
+
+  if(!response.ok){
+
+    throw new Error(
+      "Gagal mencari koordinat."
+    );
+
+  }
+
+
+  const hasil =
+    await response.json();
+
+
+  if(
+    !hasil ||
+    hasil.length === 0
+  ){
+
+    throw new Error(
+      "Lokasi tidak ditemukan."
+    );
+
+  }
+
+
+  return {
+
+    lat:
+      parseFloat(
+        hasil[0].lat
+      ),
+
+    lng:
+      parseFloat(
+        hasil[0].lon
+      )
+
+  };
+
+}
+
+
+/* =====================================================
+   UPDATE PICKUP DARI ALAMAT
+===================================================== */
+
+async function prosesPickup(){
+
+  const alamat =
+    pickupInput.value.trim();
+
+
+  if(!alamat){
+
+    return;
+
+  }
+
+
+  if(
+    alamat ===
+    "Posisi saya sekarang" &&
+    myLat !== null
+  ){
+
+    pickupLat =
+      myLat;
+
+    pickupLng =
+      myLng;
+
+    tampilkanKoordinat();
+
+    tampilkanMarkerPickup();
+
+    return;
+
+  }
+
+
+  try{
+
+    tampilkanStatus(
+      "📍 Mencari koordinat titik jemput..."
+    );
+
+
+    const hasil =
+      await cariKoordinat(
+        alamat
+      );
+
+
+    pickupLat =
+      hasil.lat;
+
+    pickupLng =
+      hasil.lng;
+
+
+    tampilkanKoordinat();
+
+    tampilkanMarkerPickup();
+
+
+    tampilkanStatus(
+      "✅ Titik jemput berhasil ditemukan."
+    );
+
+  }
+
+  catch(error){
+
+    tampilkanStatus(
+      "❌ " +
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   UPDATE TUJUAN
+===================================================== */
+
+async function prosesTujuan(){
+
+  const alamat =
+    destinationInput.value.trim();
+
+
+  if(!alamat){
+
+    return;
+
+  }
+
+
+  try{
+
+    tampilkanStatus(
+      "📍 Mencari koordinat tujuan..."
+    );
+
+
+    const hasil =
+      await cariKoordinat(
+        alamat
+      );
+
+
+    tujuanLat =
+      hasil.lat;
+
+    tujuanLng =
+      hasil.lng;
+
+
+    tampilkanKoordinat();
+
+    tampilkanMarkerTujuan();
+
+
+    tampilkanStatus(
+      "✅ Koordinat tujuan berhasil ditemukan."
+    );
+
+  }
+
+  catch(error){
+
+    tampilkanStatus(
+      "❌ " +
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   KENDARAAN
+===================================================== */
+
+function pilihKendaraan(
+  jenis
+){
+
+  kendaraanDipilih =
+    jenis;
+
+
+  bikeButton.classList.toggle(
     "selected",
     jenis === "BIKE"
   );
 
 
-  carCard.classList.toggle(
+  carButton.classList.toggle(
     "selected",
     jenis === "MOBIL"
   );
@@ -1034,99 +1398,85 @@ function pilihKendaraan(jenis){
 
 
 /* =====================================================
-   GEOCODING
-===================================================== */
-
-async function cariKoordinat(alamat){
-
-  const url =
-    "https://nominatim.openstreetmap.org/search" +
-    "?format=json" +
-    "&limit=1" +
-    "&countrycodes=id" +
-    "&q=" +
-    encodeURIComponent(alamat);
-
-
-  const response =
-    await fetch(url);
-
-
-  if(!response.ok){
-
-    throw new Error(
-      "Gagal mencari koordinat lokasi."
-    );
-
-  }
-
-
-  const hasil =
-    await response.json();
-
-
-  if(!hasil || hasil.length === 0){
-
-    throw new Error(
-      "Lokasi tidak ditemukan: " +
-      alamat
-    );
-
-  }
-
-
-  return {
-
-    lat:parseFloat(
-      hasil[0].lat
-    ),
-
-    lng:parseFloat(
-      hasil[0].lon
-    )
-
-  };
-
-}
-
-
-/* =====================================================
-   PERIKSA PESANAN
+   VALIDASI PESANAN
 ===================================================== */
 
 async function periksaPesanan(){
 
   const pickup =
-    document
-      .getElementById("pickup")
-      .value
-      .trim();
+    pickupInput.value.trim();
 
 
   const destination =
-    document
-      .getElementById("destination")
-      .value
-      .trim();
+    destinationInput.value.trim();
+
+
+  if(!pickup){
+
+    tampilkanStatus(
+      "Masukkan titik jemput."
+    );
+
+    return;
+
+  }
+
+
+  if(!destination){
+
+    tampilkanStatus(
+      "Masukkan tujuan perjalanan."
+    );
+
+    return;
+
+  }
 
 
   if(!kendaraanDipilih){
 
     tampilkanStatus(
-      "Silakan pilih BIKE atau MOBIL."
+      "Pilih BIKE atau MOBIL."
     );
 
     return;
+
   }
 
 
-  if(!pickup || !destination){
+  if(
+    pickupLat === null ||
+    pickupLng === null
+  ){
+
+    await prosesPickup();
+
+  }
+
+
+  if(
+    tujuanLat === null ||
+    tujuanLng === null
+  ){
+
+    await prosesTujuan();
+
+  }
+
+
+  if(
+    pickupLat === null ||
+    pickupLng === null ||
+    tujuanLat === null ||
+    tujuanLng === null
+  ){
 
     tampilkanStatus(
-      "Lengkapi lokasi penjemputan dan tujuan."
+      "❌ Koordinat perjalanan belum lengkap."
     );
 
     return;
+
   }
 
 
@@ -1136,106 +1486,73 @@ async function periksaPesanan(){
   ){
 
     tampilkanStatus(
-      "Firebase belum siap. Tunggu sebentar lalu coba lagi."
+      "⏳ Firebase belum siap. Tunggu sebentar."
     );
 
     return;
+
   }
-
-
-  tampilkanStatus(
-    "📡 Menentukan koordinat perjalanan..."
-  );
 
 
   try{
 
-    /*
-     * JIKA POSISI SAYA SUDAH ADA
-     * maka pickup memakai koordinat GPS.
-     */
-
-    if(
-      pickupLat === null ||
-      pickupLng === null
-    ){
-
-      const koordinatPickup =
-        await cariKoordinat(pickup);
+    orderButton.disabled =
+      true;
 
 
-      pickupLat =
-        koordinatPickup.lat;
+    tampilkanStatus(
+      "📡 Membuat pesanan..."
+    );
 
-      pickupLng =
-        koordinatPickup.lng;
-
-    }
-
-
-    /*
-     * TUJUAN SELALU GEOCODING
-     */
-
-    const koordinatTujuan =
-      await cariKoordinat(
-        destination
-      );
-
-
-    tujuanLat =
-      koordinatTujuan.lat;
-
-    tujuanLng =
-      koordinatTujuan.lng;
-
-
-    /*
-     * Tampilkan ke peta
-     */
-
-    tampilkanPickup();
-
-    tampilkanTujuan();
-
-    tampilkanKoordinat();
-
-
-    /*
-     * Kirim seluruh data ke Firebase
-     */
 
     await window.kirimPesananKeFirebase({
 
-      pickup:pickup,
+      pickup:
+        pickup,
 
-      pickupLat:pickupLat,
+      pickupLat:
+        pickupLat,
 
-      pickupLng:pickupLng,
+      pickupLng:
+        pickupLng,
 
+      destination:
+        destination,
 
-      destination:destination,
+      tujuanLat:
+        tujuanLat,
 
-      tujuanLat:tujuanLat,
+      tujuanLng:
+        tujuanLng,
 
-      tujuanLng:tujuanLng,
+      myLat:
+        myLat,
 
+      myLng:
+        myLng,
 
-      myLat:myLat,
-
-      myLng:myLng,
-
-
-      vehicle:kendaraanDipilih
+      vehicle:
+        kendaraanDipilih
 
     });
+
+
+    tampilkanStatus(
+      "🔎 Pesanan berhasil dibuat. Mencari driver..."
+    );
 
 
   }
 
   catch(error){
 
-    console.error(error);
+    orderButton.disabled =
+      false;
+
+
+    console.error(
+      error
+    );
 
 
     tampilkanStatus(
@@ -1252,617 +1569,116 @@ async function periksaPesanan(){
 
 
 /* =====================================================
-   STATUS
+   EVENT TOMBOL
 ===================================================== */
 
-function tampilkanStatus(pesan){
-
-  const status =
-    document.getElementById(
-      "status"
-    );
+gpsButton.addEventListener(
+  "click",
+  ambilLokasiSaya
+);
 
 
-  if(status){
+bikeButton.addEventListener(
+  "click",
+  function(){
 
-    status.textContent =
-      pesan;
-
-  }
-
-}
-
-
-/* =====================================================
-   KOORDINAT
-===================================================== */
-
-function tampilkanKoordinat(){
-
-  const box =
-    document.getElementById(
-      "coordinateBox"
-    );
-
-
-  if(!box){
-
-    return;
-  }
-
-
-  box.innerHTML = `
-
-    <div class="coordinate-title">
-      📡 Data lokasi
-    </div>
-
-    Posisi saya:
-    ${
-      myLat !== null
-      ? myLat.toFixed(6)
-      + ", "
-      + myLng.toFixed(6)
-      : "belum tersedia"
-    }
-
-    <br>
-
-    Titik jemput:
-    ${
-      pickupLat !== null
-      ? pickupLat.toFixed(6)
-      + ", "
-      + pickupLng.toFixed(6)
-      : "belum tersedia"
-    }
-
-    <br>
-
-    Tujuan:
-    ${
-      tujuanLat !== null
-      ? tujuanLat.toFixed(6)
-      + ", "
-      + tujuanLng.toFixed(6)
-      : "belum tersedia"
-    }
-
-    <br>
-
-    Driver:
-    ${
-      driverLat !== null
-      ? driverLat.toFixed(6)
-      + ", "
-      + driverLng.toFixed(6)
-      : "belum tersedia"
-    }
-
-  `;
-
-}
-
-
-/* =====================================================
-   MARKER POSISI SAYA
-===================================================== */
-
-function tampilkanPosisiSaya(){
-
-  if(
-    myLat === null ||
-    myLng === null
-  ){
-
-    return;
-  }
-
-
-  const posisi =
-    [myLat,myLng];
-
-
-  if(markerSaya){
-
-    markerSaya.setLatLng(
-      posisi
+    pilihKendaraan(
+      "BIKE"
     );
 
   }
-
-  else{
-
-    markerSaya =
-      L.marker(
-        posisi,
-        {
-          icon:iconSaya
-        }
-      )
-      .addTo(map)
-      .bindPopup(
-        "Posisi saya"
-      );
-
-  }
-
-}
+);
 
 
-/* =====================================================
-   MARKER PICKUP
-===================================================== */
+carButton.addEventListener(
+  "click",
+  function(){
 
-function tampilkanPickup(){
-
-  if(
-    pickupLat === null ||
-    pickupLng === null
-  ){
-
-    return;
-  }
-
-
-  const posisi =
-    [pickupLat,pickupLng];
-
-
-  if(markerPickup){
-
-    markerPickup.setLatLng(
-      posisi
+    pilihKendaraan(
+      "MOBIL"
     );
 
   }
+);
 
-  else{
 
-    markerPickup =
-      L.marker(
-        posisi,
-        {
-          icon:iconPickup
-        }
-      )
-      .addTo(map)
-      .bindPopup(
-        "Titik Penjemputan"
-      );
-
-  }
-
-}
+orderButton.addEventListener(
+  "click",
+  periksaPesanan
+);
 
 
 /* =====================================================
-   MARKER TUJUAN
+   EVENT INPUT LOKASI
 ===================================================== */
 
-function tampilkanTujuan(){
-
-  if(
-    tujuanLat === null ||
-    tujuanLng === null
-  ){
-
-    return;
-  }
+pickupInput.addEventListener(
+  "change",
+  prosesPickup
+);
 
 
-  const posisi =
-    [tujuanLat,tujuanLng];
-
-
-  if(markerTujuan){
-
-    markerTujuan.setLatLng(
-      posisi
-    );
-
-  }
-
-  else{
-
-    markerTujuan =
-      L.marker(
-        posisi,
-        {
-          icon:iconTujuan
-        }
-      )
-      .addTo(map)
-      .bindPopup(
-        "Tujuan"
-      );
-
-  }
-
-}
-
-
-/* =====================================================
-   MARKER DRIVER
-===================================================== */
-
-function tampilkanDriver(){
-
-  if(
-    driverLat === null ||
-    driverLng === null
-  ){
-
-    return;
-  }
-
-
-  const posisi =
-    [driverLat,driverLng];
-
-
-  if(markerDriver){
-
-    markerDriver.setLatLng(
-      posisi
-    );
-
-  }
-
-  else{
-
-    markerDriver =
-      L.marker(
-        posisi,
-        {
-          icon:iconDriver
-        }
-      )
-      .addTo(map)
-      .bindPopup(
-        "Posisi Driver"
-      );
-
-  }
-
-
-  tampilkanKoordinat();
-
-
-  /*
-   * Jika sudah ada titik pickup,
-   * buat navigasi Driver → Pickup.
-   */
-
-  if(
-    pickupLat !== null &&
-    pickupLng !== null
-  ){
-
-    hitungNavigasiDriverPickup();
-
-  }
-
-}
-
-
-/* =====================================================
-   NAVIGASI DRIVER → PICKUP
-===================================================== */
-
-async function hitungNavigasiDriverPickup(){
-
-  if(
-    driverLat === null ||
-    driverLng === null ||
-    pickupLat === null ||
-    pickupLng === null
-  ){
-
-    return;
-  }
-
-
-  const url =
-    "https://router.project-osrm.org/route/v1/driving/" +
-
-    driverLng +
-    "," +
-    driverLat +
-
-    ";" +
-
-    pickupLng +
-    "," +
-    pickupLat +
-
-    "?overview=full&geometries=geojson";
-
-
-  try{
-
-    const response =
-      await fetch(url);
-
-
-    if(!response.ok){
-
-      throw new Error(
-        "Routing gagal."
-      );
-
-    }
-
-
-    const data =
-      await response.json();
-
+pickupInput.addEventListener(
+  "blur",
+  function(){
 
     if(
-      !data.routes ||
-      !data.routes.length
+      pickupInput.value.trim()
     ){
 
-      return;
-    }
-
-
-    const geometry =
-      data.routes[0].geometry;
-
-
-    /*
-     * Hapus route lama
-     */
-
-    if(routeDriverPickup){
-
-      map.removeLayer(
-        routeDriverPickup
-      );
+      prosesPickup();
 
     }
 
-
-    /*
-     * Buat route baru
-     */
-
-    routeDriverPickup =
-      L.geoJSON(
-        geometry,
-        {
-
-          style:{
-
-            color:"#FF8A00",
-
-            weight:6,
-
-            opacity:.9
-
-          }
-
-        }
-
-      ).addTo(map);
-
-
-    /*
-     * Status navigasi
-     */
-
-    const jarak =
-      data.routes[0].distance;
-
-
-    const durasi =
-      data.routes[0].duration;
-
-
-    tampilkanStatus(
-
-      "🚗 Driver menuju titik jemput • " +
-
-      formatJarak(jarak) +
-
-      " • " +
-
-      formatDurasi(durasi)
-
-    );
-
   }
-
-  catch(error){
-
-    console.error(
-      "Routing driver gagal:",
-      error
-    );
-
-  }
-
-}
+);
 
 
-/* =====================================================
-   FORMAT JARAK
-===================================================== */
-
-function formatJarak(meter){
-
-  if(meter < 1000){
-
-    return Math.round(meter) +
-      " m";
-
-  }
+destinationInput.addEventListener(
+  "change",
+  prosesTujuan
+);
 
 
-  return (
-    meter / 1000
-  ).toFixed(1) +
-  " km";
+destinationInput.addEventListener(
+  "blur",
+  function(){
 
-}
+    if(
+      destinationInput.value.trim()
+    ){
 
+      prosesTujuan();
 
-/* =====================================================
-   FORMAT DURASI
-===================================================== */
-
-function formatDurasi(seconds){
-
-  const menit =
-    Math.round(
-      seconds / 60
-    );
-
-
-  if(menit < 60){
-
-    return menit +
-      " menit";
-
-  }
-
-
-  const jam =
-    Math.floor(
-      menit / 60
-    );
-
-
-  const sisa =
-    menit % 60;
-
-
-  return jam +
-    " jam " +
-    sisa +
-    " menit";
-
-}
-
-
-/* =====================================================
-   FIT MAP
-===================================================== */
-
-function tampilkanSemuaTitik(){
-
-  const titik = [];
-
-
-  if(
-    myLat !== null &&
-    myLng !== null
-  ){
-
-    titik.push(
-      [myLat,myLng]
-    );
-
-  }
-
-
-  if(
-    pickupLat !== null &&
-    pickupLng !== null
-  ){
-
-    titik.push(
-      [pickupLat,pickupLng]
-    );
-
-  }
-
-
-  if(
-    tujuanLat !== null &&
-    tujuanLng !== null
-  ){
-
-    titik.push(
-      [tujuanLat,tujuanLng]
-    );
-
-  }
-
-
-  if(
-    driverLat !== null &&
-    driverLng !== null
-  ){
-
-    titik.push(
-      [driverLat,driverLng]
-    );
-
-  }
-
-
-  if(titik.length === 0){
-
-    return;
-  }
-
-
-  if(titik.length === 1){
-
-    map.setView(
-      titik[0],
-      16
-    );
-
-    return;
-  }
-
-
-  map.fitBounds(
-    titik,
-    {
-      padding:[35,35]
     }
-  );
 
-}
+  }
+);
 
 
 /* =====================================================
-   MULAI MAP
+   MULAI
 ===================================================== */
 
 document.addEventListener(
   "DOMContentLoaded",
   function(){
 
-    try {
+    initMap();
 
-      if (typeof L === "undefined") {
+    tampilkanKoordinat();
 
-        tampilkanStatus(
-          "❌ Peta belum berhasil dimuat. Periksa koneksi internet."
-        );
+    tampilkanStatus(
+      "📡 Menyiapkan lokasi GPS..."
+    );
 
-        return;
-      }
+    /*
+     * GPS otomatis.
+     * Jika gagal, tombol GPS tetap bisa
+     * digunakan untuk mencoba kembali.
+     */
 
-      initMap();
-
-    } catch (error) {
-
-      console.error(
-        "MAP ERROR:",
-        error
-      );
-
-      tampilkanStatus(
-        "❌ Terjadi kesalahan pada peta."
-      );
-
-    }
+    ambilLokasiSaya();
 
   }
 );
@@ -1886,8 +1702,7 @@ from
 
 import {
   getAuth,
-  onAuthStateChanged,
-  signOut
+  onAuthStateChanged
 }
 from
 "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
@@ -1935,15 +1750,12 @@ const firebaseConfig = {
 };
 
 
-/*
- * PENTING:
- * Gunakan konfigurasi Firebase asli proyek NEXX.
- */
-
 const app =
   getApps().length
-  ? getApps()[0]
-  : initializeApp(firebaseConfig);
+    ? getApps()[0]
+    : initializeApp(
+        firebaseConfig
+      );
 
 
 const auth =
@@ -1970,19 +1782,11 @@ let penggunaAktif =
   null;
 
 
-let berhentiMemantauPesanan =
+let berhentiPantauOrder =
   null;
 
 
-let berhentiMemantauDriver =
-  null;
-
-
-/* =====================================================
-   FUNGSI GLOBAL
-===================================================== */
-
-window.kirimPesananKeFirebase =
+let berhentiPantauDriver =
   null;
 
 
@@ -1992,42 +1796,48 @@ window.kirimPesananKeFirebase =
 
 onAuthStateChanged(
   auth,
-  async function(user){
+  function(user){
 
     if(!user){
 
-      window.location.replace(
-        "Login-penumpang.html"
+      /*
+       * PENTING:
+       * Jangan redirect ke Login.
+       * Halaman tetap berada di NEXX Penumpang.
+       */
+
+      penggunaAktif =
+        null;
+
+      orderButton.disabled =
+        true;
+
+      tampilkanStatus(
+        "⏳ Menunggu sesi akun penumpang..."
       );
 
       return;
+
     }
 
 
     if(
-      user.uid === UID_PENGEMUDI
+      user.uid !==
+      UID_PENUMPANG
     ){
 
-      window.location.replace(
-        "NEXX-DRIVER.html"
+      penggunaAktif =
+        null;
+
+      orderButton.disabled =
+        true;
+
+      tampilkanStatus(
+        "⚠️ Akun ini bukan akun penumpang simulasi."
       );
 
       return;
-    }
 
-
-    if(
-      user.uid !== UID_PENUMPANG
-    ){
-
-      await signOut(auth);
-
-
-      window.location.replace(
-        "Login-penumpang.html"
-      );
-
-      return;
     }
 
 
@@ -2036,225 +1846,135 @@ onAuthStateChanged(
 
 
     /*
-     * Firebase siap
+     * AKUN PENUMPANG AKTIF
      */
 
-    window.kirimPesananKeFirebase =
-      async function(data){
+    orderButton.disabled =
+      false;
 
-        if(!penggunaAktif){
 
-          throw new Error(
-            "Akun penumpang belum siap."
-          );
+    tampilkanStatus(
+      "✅ Akun penumpang aktif."
+    );
 
-        }
 
-
-        /*
-         * Hentikan listener lama
-         */
-
-        if(
-          berhentiMemantauPesanan
-        ){
-
-          berhentiMemantauPesanan();
-
-          berhentiMemantauPesanan =
-            null;
-
-        }
-
-
-        if(
-          berhentiMemantauDriver
-        ){
-
-          berhentiMemantauDriver();
-
-          berhentiMemantauDriver =
-            null;
-
-        }
-
-
-        /*
-         * Buat order ID baru
-         */
-
-        const pesananRef =
-          push(
-            ref(
-              db,
-              "orders"
-            )
-          );
-
-
-        /*
-         * DATA ORDER BARU
-         *
-         * Di sinilah semua koordinat
-         * dimasukkan ke Firebase.
-         */
-
-        await set(
-          pesananRef,
-          {
-
-            passengerUid:
-              penggunaAktif.uid,
-
-            driverUid:
-              "",
-
-
-            pickup:
-              data.pickup,
-
-            pickupLat:
-              data.pickupLat,
-
-            pickupLng:
-              data.pickupLng,
-
-
-            destination:
-              data.destination,
-
-            tujuanLat:
-              data.tujuanLat,
-
-            tujuanLng:
-              data.tujuanLng,
-
-
-            /*
-             * Posisi HP penumpang
-             */
-
-            myLat:
-              data.myLat,
-
-            myLng:
-              data.myLng,
-
-
-            vehicle:
-              data.vehicle,
-
-
-            status:
-              "SEARCHING",
-
-
-            createdAt:
-              serverTimestamp()
-
-          }
-        );
-
-
-        /*
-         * Simpan order aktif
-         */
-
-        const orderId =
-          pesananRef.key;
-
-
-        localStorage.setItem(
-          "nexxActiveOrderId",
-          orderId
-        );
-
-
-        /*
-         * Simpan variabel global
-         */
-
-        window.activeOrderId =
-          orderId;
-
-
-        /*
-         * Mulai memantau order
-         */
-
-        mulaiPantauPesanan(
-          orderId
-        );
-
-
-        /*
-         * Mulai memantau driver
-         */
-
-        mulaiPantauDriver();
-
-
-        /*
-         * Tampilkan semua titik
-         */
-
-        if(
-          typeof tampilkanSemuaTitik ===
-          "function"
-        ){
-
-          tampilkanSemuaTitik();
-
-        }
-
-
-        tampilkanStatus(
-          "🔎 Pesanan berhasil dibuat. Sedang mencari pengemudi..."
-        );
-
-      };
-
-
-    /*
-     * Jika halaman dibuka kembali
-     * dan masih ada order aktif.
-     */
-
-    const orderId =
-      localStorage.getItem(
-        "nexxActiveOrderId"
-      );
-
-
-    if(orderId){
-
-      window.activeOrderId =
-        orderId;
-
-
-      bacaOrderAktif(
-        orderId
-      );
-
-    }
+    pantauDriver();
 
   }
 );
 
 
 /* =====================================================
+   KIRIM PESANAN
+===================================================== */
+
+window.kirimPesananKeFirebase =
+  async function(data){
+
+    if(!penggunaAktif){
+
+      throw new Error(
+        "Akun penumpang belum siap."
+      );
+
+    }
+
+
+    const pesananRef =
+      push(
+        ref(
+          db,
+          "orders"
+        )
+      );
+
+
+    await set(
+      pesananRef,
+      {
+
+        passengerUid:
+          penggunaAktif.uid,
+
+        driverUid:
+          "",
+
+        pickup:
+          data.pickup,
+
+        pickupLat:
+          data.pickupLat,
+
+        pickupLng:
+          data.pickupLng,
+
+        destination:
+          data.destination,
+
+        tujuanLat:
+          data.tujuanLat,
+
+        tujuanLng:
+          data.tujuanLng,
+
+        myLat:
+          data.myLat,
+
+        myLng:
+          data.myLng,
+
+        vehicle:
+          data.vehicle,
+
+        status:
+          "SEARCHING",
+
+        createdAt:
+          serverTimestamp()
+
+      }
+    );
+
+
+    const orderId =
+      pesananRef.key;
+
+
+    localStorage.setItem(
+      "nexxActiveOrderId",
+      orderId
+    );
+
+
+    mulaiPantauOrder(
+      orderId
+    );
+
+
+    /*
+     * Pindah ke halaman pencarian
+     * hanya setelah Firebase berhasil.
+     */
+
+    window.location.href =
+      "NEXX-CARI-DRIVER.html";
+
+  };
+
+
+/* =====================================================
    PANTAU ORDER
 ===================================================== */
 
-function mulaiPantauPesanan(
+function mulaiPantauOrder(
   orderId
 ){
 
   if(
-    berhentiMemantauPesanan
+    berhentiPantauOrder
   ){
 
-    berhentiMemantauPesanan();
+    berhentiPantauOrder();
 
   }
 
@@ -2267,7 +1987,7 @@ function mulaiPantauPesanan(
     );
 
 
-  berhentiMemantauPesanan =
+  berhentiPantauOrder =
     onValue(
 
       orderRef,
@@ -2287,18 +2007,32 @@ function mulaiPantauPesanan(
           snapshot.val();
 
 
-        prosesStatusOrder(
-          order
-        );
+        if(
+          order.pickupLat !==
+          undefined
+        ){
 
-      },
+          window.pickupLat =
+            order.pickupLat;
 
-      function(error){
+          window.pickupLng =
+            order.pickupLng;
 
-        console.error(
-          "Gagal memantau order:",
-          error
-        );
+        }
+
+
+        if(
+          order.tujuanLat !==
+          undefined
+        ){
+
+          window.tujuanLat =
+            order.tujuanLat;
+
+          window.tujuanLng =
+            order.tujuanLng;
+
+        }
 
       }
 
@@ -2308,164 +2042,25 @@ function mulaiPantauPesanan(
 
 
 /* =====================================================
-   BACA ORDER AKTIF
+   PANTAU DRIVER
 ===================================================== */
 
-function bacaOrderAktif(
-  orderId
-){
-
-  mulaiPantauPesanan(
-    orderId
-  );
-
-
-  mulaiPantauDriver();
-
-}
-
-
-/* =====================================================
-   STATUS ORDER
-===================================================== */
-
-function prosesStatusOrder(
-  order
-){
-
-  const status =
-    order.status;
-
-
-  /*
-   * Update koordinat order
-   * jika tersedia.
-   */
+function pantauDriver(){
 
   if(
-    typeof order.pickupLat ===
-    "number"
+    !penggunaAktif
   ){
 
-    window.pickupLat =
-      order.pickupLat;
-
-    window.pickupLng =
-      order.pickupLng;
+    return;
 
   }
 
 
   if(
-    typeof order.tujuanLat ===
-    "number"
+    berhentiPantauDriver
   ){
 
-    window.tujuanLat =
-      order.tujuanLat;
-
-    window.tujuanLng =
-      order.tujuanLng;
-
-  }
-
-
-  /*
-   * Status
-   */
-
-  if(status === "SEARCHING"){
-
-    tampilkanStatus(
-      "🔎 Mencari pengemudi..."
-    );
-
-  }
-
-
-  else if(status === "ACCEPTED"){
-
-    tampilkanStatus(
-      "✅ Pesanan diterima. Menunggu posisi pengemudi..."
-    );
-
-    mulaiPantauDriver();
-
-  }
-
-
-  else if(status === "TO_PICKUP"){
-
-    tampilkanStatus(
-      "🚗 Pengemudi sedang menuju titik penjemputan."
-    );
-
-    mulaiPantauDriver();
-
-  }
-
-
-  else if(status === "IN_TRIP"){
-
-    tampilkanStatus(
-      "🛣️ Perjalanan sedang berlangsung."
-    );
-
-    /*
-     * Saat IN_TRIP nanti kita bisa
-     * lanjutkan menjadi Driver → Tujuan.
-     */
-
-  }
-
-
-  else if(status === "COMPLETED"){
-
-    tampilkanStatus(
-      "🏁 Perjalanan selesai. Terima kasih."
-    );
-
-  }
-
-
-  else if(status === "REJECTED"){
-
-    tampilkanStatus(
-      "Pesanan ditolak pengemudi."
-    );
-
-  }
-
-
-  /*
-   * Update marker
-   */
-
-  if(
-    typeof window.tampilkanPickup ===
-    "function"
-  ){
-
-    window.tampilkanPickup();
-
-    window.tampilkanTujuan();
-
-  }
-
-}
-
-
-/* =====================================================
-   PANTAU POSISI DRIVER
-===================================================== */
-
-function mulaiPantauDriver(){
-
-  if(
-    berhentiMemantauDriver
-  ){
-
-    berhentiMemantauDriver();
+    berhentiPantauDriver();
 
   }
 
@@ -2478,7 +2073,7 @@ function mulaiPantauDriver(){
     );
 
 
-  berhentiMemantauDriver =
+  berhentiPantauDriver =
     onValue(
 
       driverRef,
@@ -2489,82 +2084,42 @@ function mulaiPantauDriver(){
           !snapshot.exists()
         ){
 
-          tampilkanStatus(
-            "⏳ Menunggu posisi driver..."
-          );
-
           return;
 
         }
 
 
-        const driver =
+        const data =
           snapshot.val();
 
 
-        /*
-         * Format yang dibaca:
-         *
-         * driverLocations/
-         *   UID_DRIVER/
-         *      lat
-         *      lng
-         */
-
         if(
-          typeof driver.lat !==
+          typeof data.lat !==
           "number" ||
-          typeof driver.lng !==
+          typeof data.lng !==
           "number"
         ){
-
-          console.log(
-            "Data posisi driver tidak lengkap:",
-            driver
-          );
 
           return;
 
         }
 
 
-        /*
-         * Simpan posisi driver
-         */
+        driverLat =
+          data.lat;
 
-        window.driverLat =
-          driver.lat;
-
-        window.driverLng =
-          driver.lng;
+        driverLng =
+          data.lng;
 
 
-        /*
-         * Tampilkan driver
-         */
-
-        tampilkanDriver();
-
-
-        /*
-         * Update navigasi
-         */
-
-        if(
-          typeof hitungNavigasiDriverPickup ===
-          "function"
-        ){
-
-          hitungNavigasiDriverPickup();
-
-        }
+        tampilkanMarkerDriver();
 
       },
 
       function(error){
 
         console.error(
-          "Gagal membaca posisi driver:",
+          "Driver location:",
           error
         );
 
