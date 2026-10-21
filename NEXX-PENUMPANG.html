@@ -1400,15 +1400,25 @@ function pilihKendaraan(
    VALIDASI PESANAN
 ===================================================== */
 
-function periksaPesanan() {
+async function periksaPesanan(){
 
-  console.log("TOMBOL CARI DRIVER BERHASIL DIKLIK");
+  const pickup =
+    pickupInput.value.trim();
 
-  tampilkanStatus(
-    "✅ TES BERHASIL — tombol CARI DRIVER bekerja."
-  );
 
-}
+  const destination =
+    destinationInput.value.trim();
+
+
+  if(!pickup){
+
+    tampilkanStatus(
+      "Masukkan titik jemput."
+    );
+
+    return;
+
+  }
 
 
   if(!destination){
@@ -1827,165 +1837,27 @@ onAuthStateChanged(
     }
 
 
-    /* =====================================================
-   SIAPKAN AKUN PENUMPANG
-===================================================== */
+    penggunaAktif =
+      user;
 
-async function siapkanAkunPenumpang() {
 
-  try {
+    /*
+     * AKUN PENUMPANG AKTIF
+     */
 
-    // Tunggu Firebase menyelesaikan pemeriksaan sesi
-    await auth.authStateReady();
+    orderButton.disabled =
+      false;
 
-    const user = auth.currentUser;
-
-    if (!user) {
-
-      penggunaAktif = null;
-
-      orderButton.disabled = true;
-
-      tampilkanStatus(
-        "⚠️ Sesi akun penumpang belum ditemukan."
-      );
-
-      return;
-    }
-
-    if (user.uid !== UID_PENUMPANG) {
-
-      penggunaAktif = null;
-
-      orderButton.disabled = true;
-
-      tampilkanStatus(
-        "⚠️ Akun ini bukan akun penumpang simulasi."
-      );
-
-      return;
-    }
-
-    // AKUN VALID
-    penggunaAktif = user;
-
-    orderButton.disabled = false;
 
     tampilkanStatus(
-      "✅ Akun penumpang siap. Silakan cari driver."
+      "✅ Akun penumpang aktif."
     );
 
-    // Pantau posisi driver
+
     pantauDriver();
 
-  } catch (error) {
-
-    console.error(
-      "Gagal memeriksa akun:",
-      error
-    );
-
-    penggunaAktif = null;
-
-    orderButton.disabled = true;
-
-    tampilkanStatus(
-      "❌ Gagal memeriksa sesi akun."
-    );
   }
-}
-
-
-/* Jalankan pemeriksaan akun */
-siapkanAkunPenumpang();
-
-
-/* =====================================================
-   KIRIM PESANAN
-===================================================== */
-
-window.kirimPesananKeFirebase =
-  async function(data) {
-
-    // Pastikan Firebase sudah selesai membaca sesi
-    await auth.authStateReady();
-
-    const user = auth.currentUser;
-
-    if (
-      !user ||
-      user.uid !== UID_PENUMPANG
-    ) {
-
-      throw new Error(
-        "Sesi akun penumpang belum tersedia."
-      );
-    }
-
-    // Pastikan variabel lokal juga terisi
-    penggunaAktif = user;
-
-    const pesananRef =
-      push(ref(db, "orders"));
-
-    await set(
-      pesananRef,
-      {
-
-        passengerUid:
-          UID_PENUMPANG,
-
-        driverUid:
-          "",
-
-        pickup:
-          data.pickup,
-
-        pickupLat:
-          data.pickupLat,
-
-        pickupLng:
-          data.pickupLng,
-
-        destination:
-          data.destination,
-
-        tujuanLat:
-          data.tujuanLat,
-
-        tujuanLng:
-          data.tujuanLng,
-
-        myLat:
-          data.myLat,
-
-        myLng:
-          data.myLng,
-
-        vehicle:
-          data.vehicle,
-
-        status:
-          "SEARCHING",
-
-        createdAt:
-          serverTimestamp()
-      }
-    );
-
-    localStorage.setItem(
-      "nexxActiveOrderId",
-      pesananRef.key
-    );
-
-    console.log(
-      "Pesanan berhasil dibuat:",
-      pesananRef.key
-    );
-
-    window.location.href =
-      "NEXX-CARI-DRIVER.html";
-  };
+);
 
 
 /* =====================================================
@@ -1995,7 +1867,15 @@ window.kirimPesananKeFirebase =
 window.kirimPesananKeFirebase =
   async function(data){
 
-   
+    if(!penggunaAktif){
+
+      throw new Error(
+        "Akun penumpang belum siap."
+      );
+
+    }
+
+
     const pesananRef =
       push(
         ref(
