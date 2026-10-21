@@ -1864,14 +1864,34 @@ onAuthStateChanged(
 window.kirimPesananKeFirebase =
   async function(data){
 
-    if(!penggunaAktif){
+    const user =
+      auth.currentUser;
+
+    console.log(
+      "USER SAAT KIRIM:",
+      user
+    );
+
+
+    if(!user){
 
       throw new Error(
-        "Akun penumpang belum siap."
+        "Firebase belum menemukan akun login."
       );
 
     }
 
+
+    if(
+      user.uid !==
+      UID_PENUMPANG
+    ){
+
+      throw new Error(
+        "Akun yang aktif bukan akun penumpang."
+      );
+
+    }
 
     const pesananRef =
       push(
@@ -1887,7 +1907,7 @@ window.kirimPesananKeFirebase =
       {
 
         passengerUid:
-          penggunaAktif.uid,
+        user.uid,
 
         driverUid:
           "",
