@@ -512,6 +512,7 @@ body{
     id="orderButton"
     class="order-button"
     type="button"
+    disabled
   >
     CARI DRIVER →
   </button>
@@ -1839,6 +1840,15 @@ onAuthStateChanged(
 
     penggunaAktif =
       user;
+    
+    const orderButton =
+  document.getElementById("orderButton");
+
+orderButton.disabled = false;
+
+tampilkanStatus(
+  "✅ Akun penumpang siap. Silakan cari driver."
+);
 
 
     /*
