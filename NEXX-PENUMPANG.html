@@ -1479,18 +1479,13 @@ async function periksaPesanan(){
   }
 
 
-  if(
-    typeof window.kirimPesananKeFirebase
-    !== "function"
-  ){
+  if(typeof window.kirimPesananKeFirebase !== "function"){
+  console.log("❌ FUNGSI FIREBASE BELUM ADA");
+  tampilkanStatus("⏳ Firebase belum siap. Tunggu sebentar.");
+  return;
+}
 
-    tampilkanStatus(
-      "⏳ Firebase belum siap. Tunggu sebentar."
-    );
-
-    return;
-
-  }
+console.log("✅ FUNGSI FIREBASE SUDAH ADA");
 
 
   try{
