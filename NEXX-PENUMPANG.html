@@ -1757,9 +1757,9 @@ const app =
       );
 
 
-const auth =
-  getAuth(app);
-
+console.log("PENUMPANG ORIGIN:", window.location.origin);
+console.log("PENUMPANG URL:", window.location.href);
+console.log("PENUMPANG USER:", auth.currentUser);
 
 const db =
   getDatabase(app);
