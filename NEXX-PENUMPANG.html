@@ -1921,7 +1921,14 @@ window.kirimPesananKeFirebase =
         )
       );
 
+// --- TAMBAHKAN BARIS INI UNTUK MENGECEK DATA ---
+  console.log("DATA YANG AKAN DIKIRIM KE FIREBASE:", data);
+  // ----------------------------------------------
 
+  if (!user) {
+    throw new Error("Firebase belum menemukan akun login.");
+  }
+       
     await set(
       pesananRef,
       {
