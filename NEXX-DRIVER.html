@@ -991,14 +991,14 @@ const iconSaya = L.divIcon({
 function perbaruiMarkerSaya(lat, lon) {
 
   posisiSaya = [
-    lat,
-    lon
+    Lat,
+    Lng
   ];
 
   if (!markerSaya) {
 
     markerSaya = L.marker(
-      [lat, lon],
+      [Lat, Lng],
       {
         icon: iconSaya
       }
@@ -1007,8 +1007,8 @@ function perbaruiMarkerSaya(lat, lon) {
   } else {
 
     markerSaya.setLatLng([
-      lat,
-      lon
+      Lat,
+      Lng
     ]);
 
   }
@@ -1268,21 +1268,21 @@ function aktifkanGPS() {
 
     function(position) {
 
-      const lat =
+      const Lat =
         position.coords.latitude;
 
-      const lon =
+      const Lng =
         position.coords.longitude;
 
       gpsAktif = true;
 
       perbaruiMarkerSaya(
-        lat,
-        lon
+        Lat,
+        Lng
       );
 
       map.setView(
-        [lat, lon],
+        [Lat, Lng],
         16
       );
 
@@ -1352,17 +1352,17 @@ function aktifkanGPS() {
 
       function(position) {
 
-        const lat =
+        const Lat =
           position.coords.latitude;
 
-        const lon =
+        const Lng =
           position.coords.longitude;
 
         gpsAktif = true;
 
         perbaruiMarkerSaya(
-          lat,
-          lon
+          Lat,
+          Lng
         );
 
         document.getElementById(
@@ -2407,11 +2407,11 @@ function mulaiKirimLokasiDriver() {
         }
 
 
-        const lat =
+        const Lat =
           position.coords.latitude;
 
 
-        const lon =
+        const Lng =
           position.coords.longitude;
 
 
@@ -2429,11 +2429,11 @@ function mulaiKirimLokasiDriver() {
             lokasiRef,
             {
 
-              lat:
-                lat,
+              Lat:
+                Lat,
 
-              lon:
-                lon,
+              Lng:
+                Lng,
 
               updatedAt:
                 serverTimestamp()
