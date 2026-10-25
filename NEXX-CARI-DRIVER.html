@@ -505,7 +505,18 @@ body {
 <!-- FIREBASE SDK & LOGIKA REAL-TIME -->
 <script type="module">
   import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-  import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+import {
+  getDatabase,
+  ref,
+  onValue,
+  update
+} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCVPNfaUs8dmsr6n4oeb9WKGAlfsZ4nVfE",
@@ -519,7 +530,7 @@ body {
 
   const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
   const db = getDatabase(app);
-
+  const auth = getAuth(app);
   const orderId = localStorage.getItem("nexxActiveOrderId");
 
   const searchScreen = document.getElementById("searchScreen");
