@@ -991,14 +991,14 @@ const iconSaya = L.divIcon({
 function perbaruiMarkerSaya(lat, lon) {
 
   posisiSaya = [
-    Lat,
-    Lng
+    lat,
+    lon
   ];
 
   if (!markerSaya) {
 
     markerSaya = L.marker(
-      [Lat, Lng],
+      [lat, lon],
       {
         icon: iconSaya
       }
@@ -1007,8 +1007,8 @@ function perbaruiMarkerSaya(lat, lon) {
   } else {
 
     markerSaya.setLatLng([
-      Lat,
-      Lng
+      lat,
+      lon
     ]);
 
   }
@@ -1268,21 +1268,21 @@ function aktifkanGPS() {
 
     function(position) {
 
-      const Lat =
+      const lat =
         position.coords.latitude;
 
-      const Lng =
+      const lon =
         position.coords.longitude;
 
       gpsAktif = true;
 
       perbaruiMarkerSaya(
-        Lat,
-        Lng
+        lat,
+        lon
       );
 
       map.setView(
-        [Lat, Lng],
+        [lat, lon],
         16
       );
 
@@ -1352,17 +1352,17 @@ function aktifkanGPS() {
 
       function(position) {
 
-        const Lat =
+        const lat =
           position.coords.latitude;
 
-        const Lng =
+        const lon =
           position.coords.longitude;
 
         gpsAktif = true;
 
         perbaruiMarkerSaya(
-          Lat,
-          Lng
+          lat,
+          lon
         );
 
         document.getElementById(
@@ -2407,11 +2407,11 @@ function mulaiKirimLokasiDriver() {
         }
 
 
-        const Lat =
+        const lat =
           position.coords.latitude;
 
 
-        const Lng =
+        const lon =
           position.coords.longitude;
 
 
@@ -2429,11 +2429,11 @@ function mulaiKirimLokasiDriver() {
             lokasiRef,
             {
 
-              Lat:
-                Lat,
+              lat:
+                lat,
 
-              Lng:
-                Lng,
+              lon:
+                lon,
 
               updatedAt:
                 serverTimestamp()
@@ -2486,39 +2486,145 @@ function mulaiKirimLokasiDriver() {
 ========================================================= */
 
 async function terimaPesananFirebase() {
-async function terimaPesananFirebase() {
-  if (!pengemudiAktif) {
-    tampilkanPesan("Akun driver belum siap.");
+
+  if (
+    !pengemudiAktif
+  ) {
+
+    tampilkanPesan(
+      "Akun driver belum siap."
+    );
+
     return;
+
   }
 
-  const orderId = window.pesananAktifId;
-  const order = window.pesananAktif;
 
-  if (!orderId || !order) {
-    tampilkanPesan("Pesanan tidak ditemukan.");
+  if (
+    window.online !== true
+  ) {
+
+    tampilkanPesan(
+      "Driver sedang OFFLINE."
+    );
+
     return;
+
   }
 
-  const orderRef = ref(db, "orders/" + orderId);
+
+  const orderId =
+    window.pesananAktifId;
+
+
+  const order =
+    window.pesananAktif;
+
+
+  if (
+    !orderId ||
+    !order
+  ) {
+
+    tampilkanPesan(
+      "Pesanan tidak ditemukan."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    order.status !==
+    "SEARCHING"
+  ) {
+
+    tampilkanPesan(
+      "Pesanan sudah tidak tersedia."
+    );
+
+    return;
+
+  }
+
+
+  const orderRef =
+    ref(
+      db,
+      "orders/" +
+      orderId
+    );
+
+
+  const orderBaru = {
+
+    passengerUid:
+      order.passengerUid,
+
+    driverUid:
+      pengemudiAktif.uid,
+
+    pickup:
+      order.pickup,
+
+    destination:
+      order.destination,
+
+    vehicle:
+      order.vehicle,
+
+    status:
+      "ACCEPTED",
+
+    createdAt:
+      order.createdAt
+
+  };
+
 
   try {
-    // GUNAKAN update() AGAR KOORDINAT LAMA TIDAK TERHAPUS
-    await update(orderRef, {
-      driverUid: pengemudiAktif.uid,
-      status: "ACCEPTED"
-    });
 
-    window.pesananAktif.status = "ACCEPTED";
-    window.pesananAktif.driverUid = pengemudiAktif.uid;
+    await update(
+      orderRef,
+      orderBaru
+    );
 
-    updateUIStatusOrder("ACCEPTED");
-    tampilkanPesan("Pesanan berhasil diterima.");
 
-  } catch (error) {
-    console.error("NEXX ACCEPT ERROR:", error);
-    tampilkanPesan("Gagal menerima pesanan.");
+    window.pesananAktif =
+      orderBaru;
+
+
+    updateUIStatusOrder(
+      "ACCEPTED"
+    );
+
+
+    tampilkanPesan(
+      "Pesanan berhasil diterima."
+    );
+
+
+    console.log(
+      "NEXX: Pesanan diterima:",
+      orderId
+    );
+
   }
+
+  catch (error) {
+
+    console.error(
+      "NEXX ACCEPT ERROR:",
+      error
+    );
+
+    tampilkanPesan(
+      "Gagal menerima pesanan."
+    );
+
+  }
+
 }
 
 
