@@ -674,6 +674,7 @@ let pengemudiAktif = null;
 let driverGpsWatchId = null;
 let unsubscribeOrders = null;
 
+// Sinkronisasi Status Online/Offline ke Firebase
 window.sinkronStatusOnline = async function (aktif) {
   if (!pengemudiAktif) return;
   try {
@@ -683,12 +684,13 @@ window.sinkronStatusOnline = async function (aktif) {
   } catch (e) { console.error("Presence error:", e); }
 };
 
+// Pantau Pesanan Realtime
 function mulaiPantauPesanan() {
   if (unsubscribeOrders) unsubscribeOrders();
   const ordersRef = ref(db, "orders");
 
   unsubscribeOrders = onValue(ordersRef, (snapshot) => {
-    // JIKA DRIVER PUNYA ID PESANAN (Sedang memegang order)
+    // 1. JIKA DRIVER PUNYA ID PESANAN (Sedang memegang order)
     if (window.pesananAktifId) {
       const snap = snapshot.child(window.pesananAktifId);
       if (snap.exists()) {
@@ -700,7 +702,7 @@ function mulaiPantauPesanan() {
       return; // HENTIKAN. Jangan cari order baru.
     }
 
-    // JIKA BELUM PUNYA ID, CARI ORDER BARU (SEARCHING)
+    // 2. JIKA BELUM PUNYA ID, CARI ORDER BARU (SEARCHING)
     let ditemukan = false;
     snapshot.forEach((child) => {
       if (ditemukan) return;
@@ -714,13 +716,14 @@ function mulaiPantauPesanan() {
       }
     });
 
-    // JIKA TIDAK ADA ORDER BARU & TIDAK PEGANG ID -> RESET
+    // 3. JIKA TIDAK ADA ORDER BARU & TIDAK PEGANG ID -> RESET
     if (!ditemukan && !window.pesananAktifId) {
       window.resetTampilanPesanan();
     }
   }, (error) => { console.error("Orders listener error:", error); });
 }
 
+// Kirim Lokasi GPS Driver ke Firebase
 function mulaiKirimLokasiDriver() {
   if (!navigator.geolocation || driverGpsWatchId !== null) return;
   driverGpsWatchId = navigator.geolocation.watchPosition(
@@ -728,4 +731,65 @@ function mulaiKirimLokasiDriver() {
       if (window.online !== true || !pengemudiAktif) return;
       try {
         await update(ref(db, "driverLocations/" + pengemudiAktif.uid), {
-          lat: position.coords.latitude, lng:
+          lat: position.coords.latitude, lng: position.coords.longitude, updatedAt: serverTimestamp()
+        });
+      } catch (e) { console.error("GPS error:", e); }
+    },
+    (error) => { console.error("Driver GPS error:", error); },
+    { enableHighAccuracy: true, maximumAge: 2000, timeout: 20000 }
+  );
+}
+
+// Ubah Status Order (Pakai update() agar data pickupLat dll tidak hilang)
+async function ubahStatusOrder(statusBaru, pesanSukses) {
+  if (!pengemudiAktif || window.online !== true || !window.pesananAktifId) return;
+
+  const orderRef = ref(db, "orders/" + window.pesananAktifId);
+
+  try {
+    await update(orderRef, {
+      driverUid: pengemudiAktif.uid, status: statusBaru, updatedAt: serverTimestamp()
+    });
+
+    // Update UI Lokal secara instan
+    window.pesananAktif = { ...window.pesananAktif, status: statusBaru, driverUid: pengemudiAktif.uid };
+    window.tampilkanPesananFirebase(window.pesananAktif);
+    window.updateUIStatusOrder(statusBaru);
+
+    tampilkanPesan(pesanSukses || "Status diperbarui.");
+  } catch (e) {
+    console.error("Ubah status error:", e);
+    tampilkanPesan("Gagal mengubah status.");
+  }
+}
+
+// Fungsi Bridge untuk tombol HTML
+window.terimaPesananFirebase = async function () { await ubahStatusOrder("ACCEPTED", "Pesanan diterima."); };
+window.tolakPesananFirebase = async function () {
+  await ubahStatusOrder("REJECTED", "Pesanan ditolak.");
+  setTimeout(() => { window.pesananAktifId = null; window.pesananAktif = null; window.resetTampilanPesanan(); }, 1200);
+};
+window.mulaiPerjalananFirebase = async function () { await ubahStatusOrder("TO_PICKUP", "Menuju lokasi penjemputan."); };
+window.tibaDiLokasiFirebase = async function () { await ubahStatusOrder("IN_TRIP", "Perjalanan dimulai."); };
+window.selesaikanPerjalananFirebase = async function () {
+  await ubahStatusOrder("COMPLETED", "Perjalanan selesai.");
+  setTimeout(() => { window.pesananAktifId = null; window.pesananAktif = null; window.resetTampilanPesanan(); }, 2000);
+};
+
+// Cek Login Driver
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { window.location.replace("Login-penumpang.html"); return; }
+  if (user.uid === UID_PENUMPANG) { window.location.replace("NEXX-PENUMPANG.html"); return; }
+  if (user.uid !== UID_PENGEMUDI) {
+    await signOut(auth); window.location.replace("Login-penumpang.html"); return;
+  }
+
+  pengemudiAktif = user;
+  mulaiPantauPesanan();
+  mulaiKirimLokasiDriver();
+  await window.sinkronStatusOnline(false);
+
+  onDisconnect(ref(db, "driverPresence/" + user.uid)).update({ uid: user.uid, online: false, updatedAt: serverTimestamp() });
+  window.addEventListener("beforeunload", () => { window.sinkronStatusOnline(false); });
+});
+</script>
