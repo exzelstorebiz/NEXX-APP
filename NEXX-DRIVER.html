@@ -303,7 +303,7 @@ body { overflow-x: hidden; }
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <!-- =========================================================
-     SCRIPT 1: UI, MAP, GPS, RUTE (NEON GLOW & REDUP)
+     SCRIPT 1: UI, MAP, GPS, RUTE, TOMBOL
 ========================================================= -->
 <script>
 let online = false;
@@ -311,13 +311,7 @@ window.online = false;
 let markerSaya = null;
 let markerJemput = null;
 let markerTujuan = null;
-
-// Variabel untuk rute
-let garisRuteGlow = null;
-let garisRuteInti = null;
-let ruteDilewati = null;
-let ruteAsliKoordinat = []; 
-
+let garisRute = null; // Variabel untuk garis navigasi
 let gpsWatchId = null;
 let toastTimer = null;
 
@@ -333,7 +327,7 @@ map.setView(POSISI_AWAL, 15);
 
 const iconSaya = L.divIcon({
   className: "",
-  html: `<div style="width:42px;height:42px;border-radius:50%;background:#7B2FF7;border:4px solid #ffffff;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow: 0 0 20px 8px rgba(123,47,247,0.6), 0 4px 15px rgba(0,0,0,.35);" aria-hidden="true">🚗</div>`,
+  html: `<div style="width:42px;height:42px;border-radius:50%;background:#7B2FF7;border:4px solid #ffffff;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 15px rgba(0,0,0,.35);" aria-hidden="true">🚗</div>`,
   iconSize: [42, 42], iconAnchor: [21, 21]
 });
 
@@ -354,11 +348,8 @@ window.tampilkanMarkerTujuan = function(lat, lng) {
   markerTujuan = L.marker([lat, lng]).addTo(map).bindPopup("Tujuan");
 }
 
-// =========================================================
-// FUNGSI RUTE: EFEK GLOW & REDUP
-// =========================================================
-
-async function ambilRuteOSRM(start, end) {
+// Fungsi Menggambar Garis Rute Navigasi
+async function updateRuteOSRM(start, end) {
   if (!start || !end) return;
   const url = `https://router.project-osrm.org/route/v1/driving/${start[1]},${start[0]};${end[1]},${end[0]}?overview=full&geometries=geojson`;
   
@@ -368,79 +359,26 @@ async function ambilRuteOSRM(start, end) {
     const data = await response.json();
     if (!data.routes || !data.routes.length) return;
 
-    // Simpan koordinat rute asli
-    ruteAsliKoordinat = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
-    
-    // Gambar rute
-    gambarRuteTerpisah(start);
-    
-  } catch (e) {
-    console.error("Gagal mengambil rute:", e);
-  }
-}
+    const ruteGeoJSON = data.routes[0].geometry;
+    const layer = L.geoJSON(ruteGeoJSON);
 
-function gambarRuteTerpisah(posisiSekarang) {
-  if (!ruteAsliKoordinat || ruteAsliKoordinat.length === 0) return;
-
-  // 1. Cari titik koordinat rute yang paling dekat dengan mobil
-  let indexTerdekat = 0;
-  let jarakTerdekat = Infinity;
-
-  ruteAsliKoordinat.forEach((koordinat, index) => {
-    const dx = koordinat[0] - posisiSekarang[0];
-    const dy = koordinat[1] - posisiSekarang[1];
-    const jarak = (dx * dx) + (dy * dy);
-    
-    if (jarak < jarakTerdekat) {
-      jarakTerdekat = jarak;
-      indexTerdekat = index;
+    if (garisRute) {
+      garisRute.setLatLngs(layer.getLayers()[0].getLatLngs());
+    } else {
+      garisRute = L.geoJSON(ruteGeoJSON, {
+        style: { color: "#7B2FF7", weight: 6, opacity: 0.9, lineCap: "round" }
+      }).addTo(map);
     }
-  });
-
-  // 2. Potong garis menjadi dua (sudah dilewati vs belum)
-  const ruteSudahDilewati = ruteAsliKoordinat.slice(0, indexTerdekat + 1);
-  const ruteBelumDilewati = ruteAsliKoordinat.slice(indexTerdekat);
-
-  // 3. Bersihkan garis lama
-  if (ruteDilewati) map.removeLayer(ruteDilewati);
-  if (garisRuteGlow) map.removeLayer(garisRuteGlow);
-  if (garisRuteInti) map.removeLayer(garisRuteInti);
-
-  // 4. Gambar Rute SUDAH Dilewati (Abu-abu Redup)
-  if (ruteSudahDilewati.length > 1) {
-    ruteDilewati = L.polyline(ruteSudahDilewati, {
-      color: "#6b7280", // Abu-abu
-      weight: 6,
-      opacity: 0.6,
-      lineCap: "round",
-      lineJoin: "round"
-    }).addTo(map);
-  }
-
-  // 5. Gambar Rute BELUM Dilewati (Neon Glow)
-  if (ruteBelumDilewati.length > 1) {
-    // Lapisan Glow
-    garisRuteGlow = L.polyline(ruteBelumDilewati, {
-      color: "#a855f7", weight: 20, opacity: 0.4, lineCap: "round", lineJoin: "round"
-    }).addTo(map);
-
-    // Lapisan Inti
-    garisRuteInti = L.polyline(ruteBelumDilewati, {
-      color: "#7B2FF7", weight: 6, opacity: 1, lineCap: "round", lineJoin: "round"
-    }).addTo(map);
+  } catch (e) {
+    console.error("Gagal memperbarui rute:", e);
   }
 }
 
 function hapusMarkerPesanan() {
   if (markerJemput) { map.removeLayer(markerJemput); markerJemput = null; }
   if (markerTujuan) { map.removeLayer(markerTujuan); markerTujuan = null; }
-  if (ruteDilewati) { map.removeLayer(ruteDilewati); ruteDilewati = null; }
-  if (garisRuteGlow) { map.removeLayer(garisRuteGlow); garisRuteGlow = null; }
-  if (garisRuteInti) { map.removeLayer(garisRuteInti); garisRuteInti = null; }
-  ruteAsliKoordinat = [];
+  if (garisRute) { map.removeLayer(garisRute); garisRute = null; } // Hapus garis rute
 }
-
-// =========================================================
 
 function tampilkanPesan(pesan) {
   const toast = document.getElementById("toast");
@@ -511,9 +449,9 @@ function aktifkanGPS() {
       document.getElementById("gpsDot").classList.add("active");
       document.getElementById("mapStatus").textContent = "GPS LIVE";
 
-      // Real-time update garis rute (potong garis redup) saat mobil bergerak
+      // Real-time update garis rute saat driver bergerak
       if (window.pesananAktif && window.pesananAktif.status === "TO_PICKUP" && window.pesananAktif.pickupLat) {
-         gambarRuteTerpisah([pos.coords.latitude, pos.coords.longitude]);
+         updateRuteOSRM([pos.coords.latitude, pos.coords.longitude], [window.pesananAktif.pickupLat, window.pesananAktif.pickupLng]);
       }
     },
     (err) => { document.getElementById("gpsDot").classList.remove("active"); },
@@ -574,9 +512,10 @@ window.updateUIStatusOrder = function(status) {
     start.onclick = () => mulaiPerjalanan();
     start.style.display = "block";
 
+    // GAMBAR RUTE SAAT MULAI JEMPUT
     if (window.pesananAktif && window.pesananAktif.pickupLat) {
-        const posisiSekarang = markerSaya ? markerSaya.getLatLng() : {lat: POSISI_AWAL[0], lng: POSISI_AWAL[1]};
-        ambilRuteOSRM([posisiSekarang.lat, posisiSekarang.lng], [window.pesananAktif.pickupLat, window.pesananAktif.pickupLng]);
+        const posisiSekarang = markerSaya ? markerSaya.getLatLng() : POSISI_AWAL;
+        updateRuteOSRM([posisiSekarang.lat, posisiSekarang.lng], [window.pesananAktif.pickupLat, window.pesananAktif.pickupLng]);
     }
   } 
   else if (status === "IN_TRIP") {
@@ -584,15 +523,15 @@ window.updateUIStatusOrder = function(status) {
     state.textContent = "Perjalanan bersama penumpang sedang berlangsung.";
     complete.style.display = "block";
     
+    // GANTI RUTE MENUJU TITIK TUJUAN
     if (window.pesananAktif && window.pesananAktif.tujuanLat) {
-        const posisiSekarang = markerSaya ? markerSaya.getLatLng() : {lat: POSISI_AWAL[0], lng: POSISI_AWAL[1]};
-        ambilRuteOSRM([posisiSekarang.lat, posisiSekarang.lng], [window.pesananAktif.tujuanLat, window.pesananAktif.tujuanLng]);
+        const posisiSekarang = markerSaya ? markerSaya.getLatLng() : POSISI_AWAL;
+        updateRuteOSRM([posisiSekarang.lat, posisiSekarang.lng], [window.pesananAktif.tujuanLat, window.pesananAktif.tujuanLng]);
     }
   } 
   else if (status === "COMPLETED") {
     badge.textContent = "SELESAI";
     state.textContent = "Perjalanan telah selesai.";
-    hapusMarkerPesanan();
   } 
   else if (status === "REJECTED") {
     badge.textContent = "DITOLAK";
@@ -674,7 +613,6 @@ let pengemudiAktif = null;
 let driverGpsWatchId = null;
 let unsubscribeOrders = null;
 
-// Sinkronisasi Status Online/Offline ke Firebase
 window.sinkronStatusOnline = async function (aktif) {
   if (!pengemudiAktif) return;
   try {
@@ -684,13 +622,12 @@ window.sinkronStatusOnline = async function (aktif) {
   } catch (e) { console.error("Presence error:", e); }
 };
 
-// Pantau Pesanan Realtime
 function mulaiPantauPesanan() {
   if (unsubscribeOrders) unsubscribeOrders();
   const ordersRef = ref(db, "orders");
 
   unsubscribeOrders = onValue(ordersRef, (snapshot) => {
-    // 1. JIKA DRIVER PUNYA ID PESANAN (Sedang memegang order)
+    // JIKA DRIVER PUNYA ID PESANAN (Sedang memegang order)
     if (window.pesananAktifId) {
       const snap = snapshot.child(window.pesananAktifId);
       if (snap.exists()) {
@@ -702,7 +639,7 @@ function mulaiPantauPesanan() {
       return; // HENTIKAN. Jangan cari order baru.
     }
 
-    // 2. JIKA BELUM PUNYA ID, CARI ORDER BARU (SEARCHING)
+    // JIKA BELUM PUNYA ID, CARI ORDER BARU (SEARCHING)
     let ditemukan = false;
     snapshot.forEach((child) => {
       if (ditemukan) return;
@@ -716,14 +653,13 @@ function mulaiPantauPesanan() {
       }
     });
 
-    // 3. JIKA TIDAK ADA ORDER BARU & TIDAK PEGANG ID -> RESET
+    // JIKA TIDAK ADA ORDER BARU & TIDAK PEGANG ID -> RESET
     if (!ditemukan && !window.pesananAktifId) {
       window.resetTampilanPesanan();
     }
   }, (error) => { console.error("Orders listener error:", error); });
 }
 
-// Kirim Lokasi GPS Driver ke Firebase
 function mulaiKirimLokasiDriver() {
   if (!navigator.geolocation || driverGpsWatchId !== null) return;
   driverGpsWatchId = navigator.geolocation.watchPosition(
@@ -740,7 +676,6 @@ function mulaiKirimLokasiDriver() {
   );
 }
 
-// Ubah Status Order (Pakai update() agar data pickupLat dll tidak hilang)
 async function ubahStatusOrder(statusBaru, pesanSukses) {
   if (!pengemudiAktif || window.online !== true || !window.pesananAktifId) return;
 
@@ -751,7 +686,7 @@ async function ubahStatusOrder(statusBaru, pesanSukses) {
       driverUid: pengemudiAktif.uid, status: statusBaru, updatedAt: serverTimestamp()
     });
 
-    // Update UI Lokal secara instan
+    // UPDATE LOKAL: Agar UI langsung berubah saat itu juga tanpa menunggu Firebase onValue
     window.pesananAktif = { ...window.pesananAktif, status: statusBaru, driverUid: pengemudiAktif.uid };
     window.tampilkanPesananFirebase(window.pesananAktif);
     window.updateUIStatusOrder(statusBaru);
@@ -763,7 +698,6 @@ async function ubahStatusOrder(statusBaru, pesanSukses) {
   }
 }
 
-// Fungsi Bridge untuk tombol HTML
 window.terimaPesananFirebase = async function () { await ubahStatusOrder("ACCEPTED", "Pesanan diterima."); };
 window.tolakPesananFirebase = async function () {
   await ubahStatusOrder("REJECTED", "Pesanan ditolak.");
@@ -776,7 +710,6 @@ window.selesaikanPerjalananFirebase = async function () {
   setTimeout(() => { window.pesananAktifId = null; window.pesananAktif = null; window.resetTampilanPesanan(); }, 2000);
 };
 
-// Cek Login Driver
 onAuthStateChanged(auth, async (user) => {
   if (!user) { window.location.replace("Login-penumpang.html"); return; }
   if (user.uid === UID_PENUMPANG) { window.location.replace("NEXX-PENUMPANG.html"); return; }
@@ -793,3 +726,6 @@ onAuthStateChanged(auth, async (user) => {
   window.addEventListener("beforeunload", () => { window.sinkronStatusOnline(false); });
 });
 </script>
+
+</body>
+</html>
