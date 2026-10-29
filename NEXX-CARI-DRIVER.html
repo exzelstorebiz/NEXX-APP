@@ -3,35 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>NEXX - Mencari Driver</title>
 
-<style>
-* {
-  box-sizing: border-box;
-}
+<!-- LEAFLET -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
+<style>
+* { box-sizing: border-box; }
 body {
   margin: 0;
   min-height: 100vh;
   font-family: Arial, sans-serif;
-
-  background:
-    radial-gradient(
-      circle at 50% 0%,
-      #eee6ff 0%,
-      #f7f5fc 38%,
-      #ffffff 75%
-    );
-
+  background: radial-gradient(circle at 50% 0%, #eee6ff 0%, #f7f5fc 38%, #ffffff 75%);
   color: #171329;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 /* =========================
-   HALAMAN PENCARIAN
+   HALAMAN PENCARIAN (RADAR)
 ========================= */
-
 .search-screen {
   min-height: 100vh;
   display: flex;
@@ -41,395 +31,168 @@ body {
   padding: 25px;
   text-align: center;
 }
-
 .logo {
-  width: 68px;
-  height: 68px;
-  border-radius: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
+  width: 68px; height: 68px; border-radius: 22px;
+  display: flex; align-items: center; justify-content: center;
   background: linear-gradient(135deg, #7b2ff7, #ff8a00);
-
-  font-size: 32px;
-  font-weight: 900;
-
-  box-shadow:
-    0 0 25px rgba(123,47,247,.55),
-    0 0 35px rgba(255,138,0,.25);
-
+  font-size: 32px; font-weight: 900; color: white;
+  box-shadow: 0 0 25px rgba(123,47,247,.55), 0 0 35px rgba(255,138,0,.25);
   margin-bottom: 30px;
 }
+.title { font-size: 25px; font-weight: 800; margin-bottom: 8px; }
+.subtitle { color: #5f5870; font-size: 14px; margin-bottom: 45px; }
 
-.title {
-  font-size: 25px;
-  font-weight: 800;
-  margin-bottom: 8px;
-}
-
-.subtitle {
-  color: #5f5870;
-  font-size: 14px;
-  margin-bottom: 45px;
-}
-
-/* =========================
-   ANIMASI PENCARIAN
-========================= */
-
+/* Animasi Radar */
 .search-animation {
-  position: relative;
-  width: 190px;
-  height: 190px;
-  margin-bottom: 35px;
+  position: relative; width: 190px; height: 190px; margin-bottom: 35px;
 }
-
 .circle {
-  position: absolute;
-  border-radius: 50%;
+  position: absolute; border-radius: 50%;
   border: 2px solid rgba(123,47,247,.65);
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  left: 50%; top: 50%; transform: translate(-50%, -50%);
   animation: radar 2.5s infinite;
 }
-
-.circle:nth-child(1) {
-  width: 65px;
-  height: 65px;
-  animation-delay: 0s;
-}
-
-.circle:nth-child(2) {
-  width: 115px;
-  height: 115px;
-  animation-delay: .6s;
-}
-
-.circle:nth-child(3) {
-  width: 165px;
-  height: 165px;
-  animation-delay: 1.2s;
-}
-
+.circle:nth-child(1) { width: 65px; height: 65px; animation-delay: 0s; }
+.circle:nth-child(2) { width: 115px; height: 115px; animation-delay: .6s; }
+.circle:nth-child(3) { width: 165px; height: 165px; animation-delay: 1.2s; }
 .search-dot {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-
-  width: 24px;
-  height: 24px;
-
-  border-radius: 50%;
-  background: #ff8a00;
-
+  position: absolute; left: 50%; top: 50%;
+  width: 24px; height: 24px; border-radius: 50%; background: #ff8a00;
   transform: translate(-50%, -50%);
-
-  box-shadow:
-    0 0 15px #ff8a00,
-    0 0 35px rgba(255,138,0,.7);
-
+  box-shadow: 0 0 15px #ff8a00, 0 0 35px rgba(255,138,0,.7);
   animation: pulse 1.2s infinite;
 }
-
 @keyframes radar {
-  0% {
-    transform: translate(-50%, -50%) scale(.65);
-    opacity: 1;
-  }
-
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0;
-  }
+  0% { transform: translate(-50%, -50%) scale(.65); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
 }
-
 @keyframes pulse {
-  0%, 100% {
-    transform: translate(-50%, -50%) scale(1);
-  }
-
-  50% {
-    transform: translate(-50%, -50%) scale(1.3);
-  }
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.3); }
 }
 
-/* =========================
-   STATUS
-========================= */
-
+/* Status Box */
 .status-box {
-  width: 100%;
-  max-width: 390px;
-
-  padding: 18px 20px;
-
-  border-radius: 18px;
-
-  background: rgba(255,255,255,.92);
-
-  border: 1px solid #e4dff0;
-
-  box-shadow:
-    0 10px 30px rgba(50,30,90,.10);
-
-  backdrop-filter: blur(10px);
+  width: 100%; max-width: 390px;
+  padding: 18px 20px; border-radius: 18px;
+  background: rgba(255,255,255,.92); border: 1px solid #e4dff0;
+  box-shadow: 0 10px 30px rgba(50,30,90,.10); backdrop-filter: blur(10px);
 }
-
-.status-main {
-  font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.status-small {
-  font-size: 13px;
-  color: #716a80;
-}
-
-/* =========================
-   BATAL
-========================= */
-
+.status-main { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.status-small { font-size: 13px; color: #716a80; }
 .cancel-button {
-  margin-top: 25px;
-
-  width: 100%;
-  max-width: 390px;
-
-  padding: 15px;
-
-  border: 1px solid rgba(255,255,255,.15);
-  border-radius: 15px;
-
-  background: transparent;
-  color: #7b2ff7;
-
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
+  margin-top: 25px; width: 100%; max-width: 390px;
+  padding: 15px; border: 1px solid rgba(255,255,255,.15);
+  border-radius: 15px; background: transparent; color: #7b2ff7;
+  font-size: 14px; font-weight: 700; cursor: pointer;
 }
 
 /* =========================
-   SCREEN SYSTEM
+   DRIVER FOUND SCREEN
 ========================= */
-
-.screen {
-  min-height: 100vh;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  padding: 25px;
-
-  text-align: center;
-}
-
-/* =========================
-   DRIVER FOUND
-========================= */
-
 .driver-screen {
-  display: none;
-  justify-content: flex-start;
-  padding-top: 28px;
+  display: none; flex-direction: column;
+  min-height: 100vh; padding: 22px 20px;
   overflow-y: auto;
 }
-
 .found-header {
-  width: 100%;
-  max-width: 430px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 18px;
-  text-align: left;
 }
-
-.found-title {
-  font-size: 23px;
-  font-weight: 800;
-  color: #171329;
-}
-
-.found-subtitle {
-  margin-top: 5px;
-  font-size: 13px;
-  color: #6c6578;
-}
-
+.found-title { font-size: 23px; font-weight: 800; color: #171329; }
+.found-subtitle { margin-top: 5px; font-size: 13px; color: #6c6578; }
 .found-check {
-  width: 42px;
-  height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: #7b2ff7;
-  color: white;
-  font-size: 22px;
-  font-weight: bold;
+  width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; background: #7b2ff7; color: white; font-size: 22px; font-weight: bold;
   box-shadow: 0 6px 18px rgba(123,47,247,.25);
 }
 
-/* =========================
-   MAP
-========================= */
-
+/* Peta */
 .map-container {
-  width: 100%;
-  max-width: 430px;
-  height: 220px;
-  overflow: hidden;
-  border-radius: 25px;
-  background: #e9e5ef;
-  border: 1px solid #ddd6e8;
+  width: 100%; height: 300px;
+  overflow: hidden; border-radius: 25px;
+  background: #e9e5ef; border: 1px solid #ddd6e8;
   box-shadow: 0 10px 30px rgba(50,30,90,.12);
-  position: relative;
+  position: relative; margin-bottom: 16px;
 }
+#map { width: 100%; height: 100%; z-index: 1; }
 
-#map {
-  width: 100%;
-  height: 100%;
+/* Kartu Driver */
+.driver-card {
+  width: 100%; padding: 18px; border-radius: 22px;
+  background: white; border: 1px solid #e3deeb;
+  box-shadow: 0 8px 25px rgba(50,30,90,.10);
 }
+.driver-top { display: flex; align-items: center; gap: 13px; }
+.driver-avatar {
+  width: 56px; height: 56px; display: flex; align-items: center; justify-content: center;
+  border-radius: 18px; background: linear-gradient(135deg,#7b2ff7,#ff8a00);
+  font-size: 25px; color: white;
+}
+.driver-info { flex: 1; }
+.driver-name { font-size: 18px; font-weight: 800; color: #171329; }
+.driver-rating { margin-top: 5px; font-size: 13px; color: #ff8a00; font-weight: bold; }
+.driver-rating span { color: #756d82; font-weight: normal; }
+.vehicle-icon { font-size: 28px; }
+.driver-divider { height: 1px; background: #eeeaf2; margin: 15px 0; }
+.vehicle-info { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.vehicle-info div { display: flex; flex-direction: column; gap: 5px; }
+.info-label { font-size: 10px; color: #81798d; font-weight: bold; }
+.vehicle-info strong { color: #282238; font-size: 15px; }
+.driver-status {
+  margin-top: 16px; padding: 12px; border-radius: 12px;
+  background: #f4efff; color: #5b28ad; font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; gap: 8px;
+}
+.status-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: #25c76f; box-shadow: 0 0 8px rgba(37,199,111,.5);
+  animation: blink 1.5s infinite;
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* Tombol Aksi */
+.contact-button {
+  width: 100%; margin-top: 15px; padding: 16px;
+  border: none; border-radius: 16px;
+  background: linear-gradient(135deg,#7b2ff7,#ff8a00);
+  color: white; font-size: 15px; font-weight: 800; cursor: pointer;
+  box-shadow: 0 8px 20px rgba(123,47,247,.22);
+  transition: 0.2s;
+}
+.contact-button:active { transform: scale(0.98); }
 
 /* =========================
-   DRIVER CARD
+   SELESAI SCREEN
 ========================= */
-
-.driver-card {
-  width: 100%;
-  max-width: 430px;
-  margin-top: 16px;
-  padding: 16px;
-  border-radius: 22px;
-  background: white;
-  border: 1px solid #e3deeb;
-  box-shadow: 0 8px 25px rgba(50,30,90,.10);
-  text-align: left;
+.finished-screen {
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: 100vh; padding: 25px; text-align: center;
 }
-
-.driver-top {
-  display: flex;
-  align-items: center;
-  gap: 13px;
+.finished-icon {
+  font-size: 80px; margin-bottom: 20px;
+  animation: bounceIn 0.5s ease;
 }
-
-.driver-avatar {
-  width: 56px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 18px;
+@keyframes bounceIn {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+.finished-title { font-size: 28px; font-weight: 900; color: #171329; margin-bottom: 10px; }
+.finished-text { font-size: 15px; color: #6c6578; margin-bottom: 30px; }
+.finished-btn {
+  padding: 16px 40px; border: none; border-radius: 16px;
   background: linear-gradient(135deg,#7b2ff7,#ff8a00);
-  font-size: 25px;
-}
-
-.driver-info {
-  flex: 1;
-}
-
-.driver-name {
-  font-size: 18px;
-  font-weight: 800;
-  color: #171329;
-}
-
-.driver-rating {
-  margin-top: 5px;
-  font-size: 13px;
-  color: #ff8a00;
-  font-weight: bold;
-}
-
-.driver-rating span {
-  color: #756d82;
-  font-weight: normal;
-}
-
-.vehicle-icon {
-  font-size: 28px;
-}
-
-.driver-divider {
-  height: 1px;
-  background: #eeeaf2;
-  margin: 15px 0;
-}
-
-.vehicle-info {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 2px;
-}
-
-.vehicle-info div {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.info-label {
-  font-size: 10px;
-  color: #81798d;
-  font-weight: bold;
-}
-
-.vehicle-info strong {
-  color: #282238;
-  font-size: 15px;
-  margin-top: 2px;
-}
-
-.driver-status {
-  margin-top: 16px;
-  padding: 12px;
-  border-radius: 12px;
-  background: #f4efff;
-  color: #5b28ad;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.status-dot {
-  display: inline-block;
-  width: 9px;
-  height: 9px;
-  margin-right: 7px;
-  border-radius: 50%;
-  background: #25c76f;
-  box-shadow: 0 0 8px rgba(37,199,111,.5);
-}
-
-.contact-button {
-  width: 100%;
-  max-width: 430px;
-  margin-top: 15px;
-  margin-bottom: 25px;
-  padding: 16px;
-  border: none;
-  border-radius: 16px;
-  background: linear-gradient(135deg,#7b2ff7,#ff8a00);
-  color: white;
-  font-size: 15px;
-  font-weight: 800;
-  cursor: pointer;
+  color: white; font-size: 16px; font-weight: 800; cursor: pointer;
   box-shadow: 0 8px 20px rgba(123,47,247,.22);
 }
 </style>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
-
 <body>
 
-<!-- SCREEN 1 — MENCARI DRIVER -->
-<div class="screen" id="searchScreen">
+<!-- SCREEN 1: MENCARI DRIVER -->
+<div class="search-screen" id="searchScreen">
   <div class="logo">N</div>
   <div class="title">Mencari Pengemudi</div>
   <div class="subtitle">NEXX sedang mencari pengemudi untuk Anda</div>
@@ -446,27 +209,23 @@ body {
     <div class="status-small">Mohon tunggu, kami sedang mencarikan pengemudi terdekat.</div>
   </div>
 
-  <button class="cancel-button" id="cancelButton">
-    Batalkan Pesanan
-  </button>
+  <button class="cancel-button" id="cancelButton">Batalkan Pesanan</button>
 </div>
 
-<!-- SCREEN 2 — DRIVER DITEMUKAN -->
-<div class="screen driver-screen" id="driverScreen">
+<!-- SCREEN 2: DRIVER DITEMUKAN -->
+<div class="driver-screen" id="driverScreen">
   <div class="found-header">
     <div>
-      <div class="found-title">Pengemudi Ditemukan</div>
+      <div class="found-title" id="mainTitle">Pengemudi Ditemukan</div>
       <div class="found-subtitle" id="teksStatusDriver">Pengemudi sedang menuju lokasi Anda</div>
     </div>
-    <div class="found-check">✓</div>
+    <div class="found-check" id="mainIcon">✓</div>
   </div>
 
-  <!-- MAP -->
   <div class="map-container">
     <div id="map"></div>
   </div>
 
-  <!-- DRIVER CARD -->
   <div class="driver-card">
     <div class="driver-top">
       <div class="driver-avatar">👤</div>
@@ -490,7 +249,7 @@ body {
       </div>
     </div>
 
-    <div class="driver-status">
+    <div class="driver-status" id="driverStatusBox">
       <span class="status-dot"></span>
       <span id="statusKeterangan">Driver dalam perjalanan menuju titik jemput</span>
     </div>
@@ -499,173 +258,211 @@ body {
   <button class="contact-button">Hubungi Pengemudi</button>
 </div>
 
+<!-- SCREEN 3: SELESAI -->
+<div class="finished-screen" id="finishedScreen">
+  <div class="finished-icon">🎉</div>
+  <div class="finished-title">Perjalanan Selesai!</div>
+  <div class="finished-text">Terima kasih telah menggunakan layanan NEXX.</div>
+  <button class="finished-btn" onclick="kembaliKeAwal()">Kembali ke Beranda</button>
+</div>
+
 <!-- LEAFLET JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<!-- FIREBASE SDK & LOGIKA REAL-TIME -->
-<script type="module">
-  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+<!-- SCRIPT 1: MAP, UI & RUTE PENUMPANG -->
+<script>
+let map = null;
+let markerPenumpang = null;
+let markerDriver = null;
+let ruteGlow = null;
+let ruteInti = null;
 
-import {
-  getAuth,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+let posisiPenumpang = null; // [lat, lng]
+let posisiDriver = null;
+let ruteAsliKoordinat = [];
 
-import {
-  getDatabase,
-  ref,
-  onValue,
-  update
-} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+// Fungsi Pindah Layar
+function pindahLayar(id) {
+  document.getElementById("searchScreen").style.display = "none";
+  document.getElementById("driverScreen").style.display = "none";
+  document.getElementById("finishedScreen").style.display = "none";
+  document.getElementById(id).style.display = "flex";
+}
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCVPNfaUs8dmsr6n4oeb9WKGAlfsZ4nVfE",
-    authDomain: "nexx-simulasi.firebaseapp.com",
-    databaseURL: "https://nexx-simulasi-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "nexx-simulasi",
-    storageBucket: "nexx-simulasi.firebasestorage.app",
-    messagingSenderId: "741542128730",
-    appId: "1:741542128730:web:d12c9246b9810216c0fc63"
-  };
+// Inisialisasi Peta
+function initMap(lat, lng) {
+  if (map) return;
+  map = L.map("map").setView([lat, lng], 15);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(map);
 
-  const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  const auth = getAuth(app);
-  const orderId = localStorage.getItem("nexxActiveOrderId");
+  // Ikon Penumpang (Oren)
+  const iconPenumpang = L.divIcon({
+    className: "",
+    html: `<div style="width:36px;height:36px;border-radius:50%;background:#ff8a00;border:3px solid white;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 15px #ff8a00;">📍</div>`,
+    iconSize: [36, 36], iconAnchor: [18, 18]
+  });
+  markerPenumpang = L.marker([lat, lng], { icon: iconPenumpang }).addTo(map).bindPopup("Titik Jemput Anda");
+  
+  setTimeout(() => { map.invalidateSize(); }, 300);
+}
 
-  const searchScreen = document.getElementById("searchScreen");
-  const driverScreen = document.getElementById("driverScreen");
-  const statusPencarian = document.getElementById("statusPencarian");
+// Update Posisi Driver & Rute
+function updatePosisiDriver(lat, lng) {
+  posisiDriver = [lat, lng];
+  if (!map) return;
 
-  let map = null;
-  let markerPenumpang = null;
-  let markerDriver = null;
-  let routeLine = null;
+  // Ikon Driver (Ungu Glow)
+  const iconDriver = L.divIcon({
+    className: "",
+    html: `<div style="width:42px;height:42px;border-radius:50%;background:#7b2ff7;border:3px solid white;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 20px 8px rgba(123,47,247,0.6);">🏍️</div>`,
+    iconSize: [42, 42], iconAnchor: [21, 21]
+  });
 
-  let posisiPenumpang = [-6.975874, 110.073756]; // Default fallback
-  let posisiDriver = null;
-
-  function initMap(lat, lng) {
-    if (map) return;
-    map = L.map("map").setView([lat, lng], 15);
-
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: "&copy; OpenStreetMap"
-    }).addTo(map);
-
-    const ikonPenumpang = L.divIcon({
-      className: "",
-      html: `<div style="width:36px;height:36px;border-radius:50%;background:#ff8a00;border:3px solid white;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;box-shadow:0 3px 10px rgba(0,0,0,.3);">📍</div>`,
-      iconSize: [36, 36],
-      iconAnchor: [18, 18]
-    });
-
-    markerPenumpang = L.marker([lat, lng], { icon: ikonPenumpang }).addTo(map).bindPopup("Titik Jemput Anda");
-  }
-
-  if (!orderId) {
-    statusPencarian.textContent = "⚠️ Tidak ada pesanan aktif ditemukan.";
+  if (markerDriver) {
+    markerDriver.setLatLng(posisiDriver);
   } else {
-    const orderRef = ref(db, "orders/" + orderId);
-
-    // Pantau status order secara real-time dari Firebase
-    onValue(orderRef, (snapshot) => {
-      if (!snapshot.exists()) return;
-      const order = snapshot.val();
-
-      if (order.pickupLat && order.pickupLng) {
-        posisiPenumpang = [order.pickupLat, order.pickupLng];
-      }
-
-      if (order.vehicle) {
-        document.getElementById("vehicleTypeText").textContent = order.vehicle;
-        document.getElementById("vehicleIcon").textContent = order.vehicle === "BIKE" ? "🏍️" : "🚗";
-      }
-
-      // Jika driver sudah menerima pesanan (status ACCEPTED / TO_PICKUP / dll)
-      if (order.status && order.status !== "SEARCHING") {
-        searchScreen.style.display = "none";
-        driverScreen.style.display = "flex";
-
-        setTimeout(() => {
-          initMap(posisiPenumpang[0], posisiPenumpang[1]);
-          map.invalidateSize();
-        }, 100);
-
-        if (order.driverUid) {
-          mulaiPantauLokasiDriver(order.driverUid);
-        }
-      } else {
-        searchScreen.style.display = "flex";
-        driverScreen.style.display = "none";
-        statusPencarian.textContent = "Mencari driver terdekat...";
-      }
-    });
+    markerDriver = L.marker(posisiDriver, { icon: iconDriver }).addTo(map).bindPopup("Posisi Driver");
   }
 
-  // Fungsi untuk memantau pergerakan posisi driver secara real-time
-  function mulaiPantauLokasiDriver(driverUid) {
-    const driverRef = ref(db, "driverLocations/" + driverUid);
-
-    onValue(driverRef, (snapshot) => {
-      if (!snapshot.exists()) return;
-      const dData = snapshot.val();
-
-      if (typeof dData.lat === "number" && typeof dData.lng === "number") {
-        posisiDriver = [dData.lat, dData.lng];
-
-        const ikonDriver = L.divIcon({
-          className: "",
-          html: `<div style="width:42px;height:42px;border-radius:50%;background:#7b2ff7;border:3px solid white;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 3px 12px rgba(0,0,0,.3);">🚗</div>`,
-          iconSize: [42, 42],
-          iconAnchor: [21, 21]
-        });
-
-        if (markerDriver) {
-          markerDriver.setLatLng(posisiDriver);
-        } else {
-          markerDriver = L.marker(posisiDriver, { icon: ikonDriver }).addTo(map).bindPopup("Posisi Pengemudi");
-        }
-
-        // Update Rute OSRM dari posisi driver menuju posisi penumpang secara live
-        updateRuteOSRM(posisiDriver, posisiPenumpang);
-      }
-    });
+  // Panggil OSRM untuk gambar rute
+  if (posisiPenumpang) {
+    ambilRuteOSRM(posisiDriver, posisiPenumpang);
   }
+}
 
-  // Mengambil dan menggambar garis rute perjalanan driver ke penjemputan via OSRM
-  async function updateRuteOSRM(start, end) {
-    const url = `https://router.project-osrm.org/route/v1/driving/${start[1]},${start[0]};${end[1]},${end[0]}?overview=full&geometries=geojson`;
+// Ambil Rute dari OSRM
+async function ambilRuteOSRM(start, end) {
+  const url = `https://router.project-osrm.org/route/v1/driving/${start[1]},${start[0]};${end[1]},${end[0]}?overview=full&geometries=geojson`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return;
+    const data = await response.json();
+    if (!data.routes || !data.routes.length) return;
 
-    try {
-      const response = await fetch(url);
-      if (!response.ok) return;
-      const data = await response.json();
-      if (!data.routes || !data.routes.length) return;
+    ruteAsliKoordinat = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+    
+    // Gambar garis (karena ini penumpang, kita asumsikan seluruh garis menyala)
+    if (ruteGlow) map.removeLayer(ruteGlow);
+    if (ruteInti) map.removeLayer(ruteInti);
 
-      const ruteGeoJSON = data.routes[0].geometry;
+    ruteGlow = L.polyline(ruteAsliKoordinat, { color: "#a855f7", weight: 20, opacity: 0.4, lineCap: "round" }).addTo(map);
+    ruteInti = L.polyline(ruteAsliKoordinat, { color: "#7B2FF7", weight: 6, opacity: 1, lineCap: "round" }).addTo(map);
 
-      if (routeLine) {
-        routeLine.setLatLngs(L.geoJSON(ruteGeoJSON).getLayers()[0].getLatLngs());
-      } else {
-        routeLine = L.geoJSON(ruteGeoJSON, {
-          style: { color: "#7B2FF7", weight: 6, opacity: 0.9, lineCap: "round" }
-        }).addTo(map);
-      }
-    } catch (e) {
-      console.error("Gagal memperbarui rute:", e);
+  } catch (e) { console.error("Gagal rute:", e); }
+}
+
+// Batalkan Pesanan
+document.getElementById("cancelButton").addEventListener("click", () => {
+  const orderId = localStorage.getItem("nexxActiveOrderId");
+  if (orderId && typeof window.batalkanPesananFirebase === "function") {
+    window.batalkanPesananFirebase(orderId);
+  } else {
+    window.location.href = "NEXX-PENUMPANG.html";
+  }
+});
+
+// Kembali ke awal
+function kembaliKeAwal() {
+  localStorage.removeItem("nexxActiveOrderId");
+  window.location.href = "NEXX-PENUMPANG.html";
+}
+</script>
+
+<!-- SCRIPT 2: FIREBASE MODULE -->
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCVPNfaUs8dmsr6n4oeb9WKGAlfsZ4nVfE",
+  authDomain: "nexx-simulasi.firebaseapp.com",
+  databaseURL: "https://nexx-simulasi-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "nexx-simulasi",
+  storageBucket: "nexx-simulasi.firebasestorage.app",
+  messagingSenderId: "741542128730",
+  appId: "1:741542128730:web:d12c9246b9810216c0fc63"
+};
+
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const orderId = localStorage.getItem("nexxActiveOrderId");
+
+if (!orderId) {
+  document.getElementById("statusPencarian").textContent = "⚠️ Tidak ada pesanan aktif.";
+} else {
+  const orderRef = ref(db, "orders/" + orderId);
+
+  // 1. Pantau Status Pesanan (Mencari -> Ditemukan -> Jalan -> Selesai)
+  onValue(orderRef, (snapshot) => {
+    if (!snapshot.exists()) return;
+    const order = snapshot.val();
+
+    if (order.pickupLat && order.pickupLng) {
+      posisiPenumpang = [order.pickupLat, order.pickupLng];
     }
-  }
 
-  // Tombol Batalkan Pesanan
-  document.getElementById("cancelButton").addEventListener("click", () => {
-    if (orderId) {
-      update(ref(db, "orders/" + orderId), { status: "CANCELLED" });
-      localStorage.removeItem("nexxActiveOrderId");
-      window.location.href = "NEXX-PENUMPANG.html";
+    if (order.vehicle) {
+      document.getElementById("vehicleTypeText").textContent = order.vehicle;
+      document.getElementById("vehicleIcon").textContent = order.vehicle === "BIKE" ? "🏍️" : "🚗";
+    }
+
+    // LOGIKA PERPINDAHAN LAYAR
+    if (order.status === "SEARCHING") {
+      pindahLayar("searchScreen");
+      document.getElementById("statusPencarian").textContent = "Mencari driver terdekat...";
+    } 
+    else if (order.status === "ACCEPTED" || order.status === "TO_PICKUP") {
+      // Driver Ditemukan / Menuju Jemput
+      pindahLayar("driverScreen");
+      document.getElementById("mainTitle").textContent = "Pengemudi Ditemukan";
+      document.getElementById("teksStatusDriver").textContent = "Pengemudi sedang menuju lokasi Anda";
+      document.getElementById("statusKeterangan").textContent = "Driver dalam perjalanan menuju titik jemput";
+      
+      setTimeout(() => {
+        if (posisiPenumpang) initMap(posisiPenumpang[0], posisiPenumpang[1]);
+        if (window.pantauDriverFirebase) window.pantauDriverFirebase(order.driverUid);
+      }, 200);
+    } 
+    else if (order.status === "IN_TRIP") {
+      // Dalam Perjalanan
+      pindahLayar("driverScreen");
+      document.getElementById("mainTitle").textContent = "Dalam Perjalanan";
+      document.getElementById("teksStatusDriver").textContent = "Menuju ke titik tujuan";
+      document.getElementById("statusKeterangan").textContent = "Anda sedang dalam perjalanan bersama driver";
+    } 
+    else if (order.status === "COMPLETED" || order.status === "REJECTED" || order.status === "CANCELLED") {
+      // Selesai / Dibatalkan
+      pindahLayar("finishedScreen");
     }
   });
+
+  // 2. Fungsi Pantau Driver
+  let unsubDriver = null;
+  window.pantauDriverFirebase = function(driverUid) {
+    if (!driverUid || unsubDriver) return;
+    const driverLocRef = ref(db, "driverLocations/" + driverUid);
+    
+    unsubDriver = onValue(driverLocRef, (snap) => {
+      if (!snap.exists()) return;
+      const data = snap.val();
+      if (typeof data.lat === "number" && typeof data.lng === "number") {
+        updatePosisiDriver(data.lat, data.lng);
+      }
+    });
+  };
+
+  // 3. Fungsi Batalkan Pesanan
+  window.batalkanPesananFirebase = async function(id) {
+    try {
+      await update(ref(db, "orders/" + id), { status: "CANCELLED" });
+      localStorage.removeItem("nexxActiveOrderId");
+      window.location.href = "NEXX-PENUMPANG.html";
+    } catch (e) {
+      console.error(e);
+      alert("Gagal membatalkan pesanan.");
+    }
+  };
+}
 </script>
 
 </body>
