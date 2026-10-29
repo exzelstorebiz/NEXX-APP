@@ -302,12 +302,8 @@ body { overflow-x: hidden; }
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<!-- =========================================================
-     SCRIPT 1: NON-MODULE (UI, MAP, GPS, TOMBOL)
-========================================================= -->
-
+<!-- SCRIPT 1: UI, MAP, GPS, TOMBOL -->
 <script>
-
 let online = false;
 window.online = false;
 let markerSaya = null;
@@ -320,36 +316,30 @@ window.pesananAktifId = null;
 window.pesananAktif = null;
 
 const POSISI_AWAL = [-7.242, 108.998];
-
 const map = L.map("map");
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  maxZoom: 19,
-  attribution: "&copy; OpenStreetMap"
+  maxZoom: 19, attribution: "&copy; OpenStreetMap"
 }).addTo(map);
 map.setView(POSISI_AWAL, 15);
 
 const iconSaya = L.divIcon({
   className: "",
   html: `<div style="width:42px;height:42px;border-radius:50%;background:#7B2FF7;border:4px solid #ffffff;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 15px rgba(0,0,0,.35);" aria-hidden="true">🚗</div>`,
-  iconSize: [42, 42],
-  iconAnchor: [21, 21]
+  iconSize: [42, 42], iconAnchor: [21, 21]
 });
 
 function perbaruiMarkerSaya(lat, lon) {
-  if (!markerSaya) {
-    markerSaya = L.marker([lat, lon], { icon: iconSaya }).addTo(map);
-  } else {
-    markerSaya.setLatLng([lat, lon]);
-  }
+  if (!markerSaya) { markerSaya = L.marker([lat, lon], { icon: iconSaya }).addTo(map); }
+  else { markerSaya.setLatLng([lat, lon]); }
 }
 
-function tampilkanMarkerJemput(lat, lng) {
+window.tampilkanMarkerJemput = function(lat, lng) {
   if (markerJemput) map.removeLayer(markerJemput);
   if (typeof lat !== "number" || typeof lng !== "number") return;
   markerJemput = L.marker([lat, lng]).addTo(map).bindPopup("Titik Jemput");
 }
 
-function tampilkanMarkerTujuan(lat, lng) {
+window.tampilkanMarkerTujuan = function(lat, lng) {
   if (markerTujuan) map.removeLayer(markerTujuan);
   if (typeof lat !== "number" || typeof lng !== "number") return;
   markerTujuan = L.marker([lat, lng]).addTo(map).bindPopup("Tujuan");
@@ -368,13 +358,13 @@ function tampilkanPesan(pesan) {
   toastTimer = setTimeout(() => toast.classList.remove("show"), 2500);
 }
 
-/* PENTING: Fungsi ini HANYA menyembunyikan kotak jika pesanan BENAR-BENAR null */
-function tampilkanPesanan() {
+window.tampilkanPesanan = function() {
   const empty = document.getElementById("emptyOrder");
   const content = document.getElementById("orderContent");
-  if (window.pesananAktif && window.pesananAktifId) {
+  // SELAMA ID PESANAN ADA, JANGAN SEMBUNYIKAN KOTAK!
+  if (window.pesananAktifId) { 
     empty.style.display = "none";
-    content.style.display = "block"; // Pastikan ini muncul
+    content.style.display = "block"; 
   } else {
     empty.style.display = "block";
     content.style.display = "none";
@@ -384,7 +374,6 @@ function tampilkanPesanan() {
 function ubahStatusOnline() {
   online = !online;
   window.online = online;
-
   document.getElementById("statusToggle").classList.toggle("active", online);
   document.getElementById("statusDot").classList.toggle("active", online);
 
@@ -415,51 +404,47 @@ function aktifkanGPS() {
   if (gpsWatchId !== null) return;
 
   navigator.geolocation.getCurrentPosition(
-    (position) => {
-      perbaruiMarkerSaya(position.coords.latitude, position.coords.longitude);
-      map.setView([position.coords.latitude, position.coords.longitude], 16);
+    (pos) => {
+      perbaruiMarkerSaya(pos.coords.latitude, pos.coords.longitude);
+      map.setView([pos.coords.latitude, pos.coords.longitude], 16);
       document.getElementById("gpsText").textContent = "GPS aktif · Posisi ditemukan";
       document.getElementById("gpsDot").classList.add("active");
     },
-    (error) => { document.getElementById("gpsText").textContent = "GPS belum tersedia"; }
+    (err) => { document.getElementById("gpsText").textContent = "GPS belum tersedia"; }
   );
 
   gpsWatchId = navigator.geolocation.watchPosition(
-    (position) => {
-      perbaruiMarkerSaya(position.coords.latitude, position.coords.longitude);
+    (pos) => {
+      perbaruiMarkerSaya(pos.coords.latitude, pos.coords.longitude);
       document.getElementById("gpsText").textContent = "GPS aktif · Lokasi diperbarui";
       document.getElementById("gpsDot").classList.add("active");
       document.getElementById("mapStatus").textContent = "GPS LIVE";
     },
-    (error) => { document.getElementById("gpsDot").classList.remove("active"); },
+    (err) => { document.getElementById("gpsDot").classList.remove("active"); },
     { enableHighAccuracy: true, maximumAge: 2000, timeout: 20000 }
   );
 }
 
 function hentikanGPS() {
-  if (gpsWatchId !== null) {
-    navigator.geolocation.clearWatch(gpsWatchId);
-    gpsWatchId = null;
-  }
+  if (gpsWatchId !== null) { navigator.geolocation.clearWatch(gpsWatchId); gpsWatchId = null; }
   document.getElementById("gpsText").textContent = "GPS tidak aktif";
   document.getElementById("gpsDot").classList.remove("active");
   document.getElementById("mapStatus").textContent = "GPS OFFLINE";
 }
 
-function tampilkanPesananFirebase(order) {
+window.tampilkanPesananFirebase = function(order) {
   document.getElementById("pickupAddress").textContent = order.pickup || "-";
   document.getElementById("destinationAddress").textContent = order.destination || "-";
-
   if (typeof order.pickupLat === "number" && typeof order.pickupLng === "number") {
-    tampilkanMarkerJemput(order.pickupLat, order.pickupLng);
+    window.tampilkanMarkerJemput(order.pickupLat, order.pickupLng);
   }
   if (typeof order.tujuanLat === "number" && typeof order.tujuanLng === "number") {
-    tampilkanMarkerTujuan(order.tujuanLat, order.tujuanLng);
+    window.tampilkanMarkerTujuan(order.tujuanLat, order.tujuanLng);
   }
-  tampilkanPesanan();
+  window.tampilkanPesanan();
 }
 
-function updateUIStatusOrder(status) {
+window.updateUIStatusOrder = function(status) {
   const badge = document.getElementById("orderBadge");
   const state = document.getElementById("orderState");
   const accept = document.getElementById("acceptButton");
@@ -468,57 +453,47 @@ function updateUIStatusOrder(status) {
   const start = document.getElementById("startButton");
   const complete = document.getElementById("completeButton");
 
-  accept.style.display = "none";
-  row.style.display = "none";
-  reject.style.display = "none";
-  start.style.display = "none";
-  complete.style.display = "none";
+  accept.style.display = "none"; row.style.display = "none"; reject.style.display = "none";
+  start.style.display = "none"; complete.style.display = "none";
 
   if (status === "SEARCHING") {
     badge.textContent = "PESANAN BARU";
     state.textContent = "Penumpang sedang mencari pengemudi.";
-    accept.style.display = "block";
-    row.style.display = "grid";
-    reject.style.display = "block";
-  }
-  else if (status === "ACCEPTED") {
+    accept.style.display = "block"; row.style.display = "grid"; reject.style.display = "block";
+  } else if (status === "ACCEPTED") {
     badge.textContent = "DITERIMA";
     state.textContent = "Pesanan diterima. Tekan MULAI untuk menuju titik jemput.";
     row.style.display = "grid";
     start.textContent = "MULAI PERJALANAN";
     start.onclick = () => mulaiPerjalanan();
     start.style.display = "block";
-  }
-  else if (status === "TO_PICKUP") {
+  } else if (status === "TO_PICKUP") {
     badge.textContent = "MENUJU JEMPUT";
     state.textContent = "Anda sedang menuju lokasi penjemputan.";
     row.style.display = "grid";
     start.textContent = "TIBA DI LOKASI";
-    start.onclick = () => mulaiPerjalanan(); // Fungsi ini mendeteksi status TO_PICKUP
+    start.onclick = () => mulaiPerjalanan();
     start.style.display = "block";
-  }
-  else if (status === "IN_TRIP") {
+  } else if (status === "IN_TRIP") {
     badge.textContent = "DALAM PERJALANAN";
     state.textContent = "Perjalanan bersama penumpang sedang berlangsung.";
     complete.style.display = "block";
-  }
-  else if (status === "COMPLETED") {
+  } else if (status === "COMPLETED") {
     badge.textContent = "SELESAI";
     state.textContent = "Perjalanan telah selesai.";
-  }
-  else if (status === "REJECTED") {
+  } else if (status === "REJECTED") {
     badge.textContent = "DITOLAK";
     state.textContent = "Pesanan ditolak.";
   }
 }
 
-function resetTampilanPesanan() {
+window.resetTampilanPesanan = function() {
   document.getElementById("pickupAddress").textContent = "-";
   document.getElementById("destinationAddress").textContent = "-";
   document.getElementById("orderBadge").textContent = "MENUNGGU";
   document.getElementById("orderState").textContent = "Belum ada pesanan aktif.";
   hapusMarkerPesanan();
-  tampilkanPesanan();
+  window.tampilkanPesanan();
 }
 
 async function terimaPesanan() {
@@ -539,7 +514,6 @@ async function tolakPesanan() {
 
 async function mulaiPerjalanan() {
   if (!window.pesananAktif) return;
-
   if (window.pesananAktif.status === "ACCEPTED") {
     await window.mulaiPerjalananFirebase(); // -> TO_PICKUP
   } else if (window.pesananAktif.status === "TO_PICKUP") {
@@ -556,20 +530,13 @@ async function selesaikanPerjalanan() {
 
 setTimeout(() => { map.invalidateSize(); }, 300);
 window.addEventListener("resize", () => { map.invalidateSize(); });
-
 </script>
 
-<!-- =========================================================
-     SCRIPT 2: FIREBASE MODULE
-========================================================= -->
-
+<!-- SCRIPT 2: FIREBASE MODULE -->
 <script type="module">
-
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-import {
-  getDatabase, ref, onValue, update, remove, serverTimestamp, onDisconnect
-} from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+import { getDatabase, ref, onValue, update, serverTimestamp, onDisconnect } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCVPNfaUs8dmsr6n4oeb9WKGAlfsZ4nVfE",
@@ -601,28 +568,25 @@ window.sinkronStatusOnline = async function (aktif) {
   } catch (e) { console.error("Presence error:", e); }
 };
 
-/* =========================================================
-   LOGIKA ONVALUE DIPERBAIKI
-========================================================= */
 function mulaiPantauPesanan() {
   if (unsubscribeOrders) unsubscribeOrders();
-
   const ordersRef = ref(db, "orders");
 
   unsubscribeOrders = onValue(ordersRef, (snapshot) => {
-    // 1. Cek jika driver sedang memegang pesanan yang sudah di-ACC / jalan
-    if (window.pesananAktif && window.pesananAktifId && window.pesananAktif.status !== "SEARCHING") {
+    // 1. JIKA DRIVER PUNYA ID PESANAN (Sedang memegang order)
+    if (window.pesananAktifId) {
       const snap = snapshot.child(window.pesananAktifId);
       if (snap.exists()) {
         const orderAktif = snap.val();
-        window.pesananAktif = orderAktif; // update state lokal
-        tampilkanPesananFirebase(orderAktif); // render teks & peta
-        updateUIStatusOrder(orderAktif.status); // atur tombol
+        // Update data lokal dan render ulang UI (jangan pernah reset di sini)
+        window.pesananAktif = orderAktif; 
+        window.tampilkanPesananFirebase(orderAktif); 
+        window.updateUIStatusOrder(orderAktif.status); 
       }
-      return; // Hentikan eksekusi agar tidak lanjut ke pencarian order baru
+      return; // HENTIKAN. Jangan cari order baru.
     }
 
-    // 2. Cari order baru berstatus SEARCHING
+    // 2. JIKA BELUM PUNYA ID, CARI ORDER BARU (SEARCHING)
     let ditemukan = false;
     snapshot.forEach((child) => {
       if (ditemukan) return;
@@ -631,35 +595,26 @@ function mulaiPantauPesanan() {
         ditemukan = true;
         window.pesananAktifId = child.key;
         window.pesananAktif = order;
-        tampilkanPesananFirebase(order);
-        updateUIStatusOrder("SEARCHING");
+        window.tampilkanPesananFirebase(order);
+        window.updateUIStatusOrder("SEARCHING");
       }
     });
 
-    // 3. Jika tidak ada order SEARCHING dan driver tidak punya order aktif, reset UI
-    if (!ditemukan) {
-      if (!window.pesananAktif || window.pesananAktif.status === "SEARCHING") {
-        window.pesananAktifId = null;
-        window.pesananAktif = null;
-        resetTampilanPesanan();
-      }
+    // 3. JIKA TIDAK ADA ORDER BARU & TIDAK PEGANG ID -> RESET
+    if (!ditemukan && !window.pesananAktifId) {
+      window.resetTampilanPesanan();
     }
-  }, (error) => {
-    console.error("Orders listener error:", error);
-  });
+  }, (error) => { console.error("Orders listener error:", error); });
 }
 
 function mulaiKirimLokasiDriver() {
   if (!navigator.geolocation || driverGpsWatchId !== null) return;
-
   driverGpsWatchId = navigator.geolocation.watchPosition(
     async (position) => {
       if (window.online !== true || !pengemudiAktif) return;
       try {
         await update(ref(db, "driverLocations/" + pengemudiAktif.uid), {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-          updatedAt: serverTimestamp()
+          lat: position.coords.latitude, lng: position.coords.longitude, updatedAt: serverTimestamp()
         });
       } catch (e) { console.error("GPS error:", e); }
     },
@@ -675,13 +630,14 @@ async function ubahStatusOrder(statusBaru, pesanSukses) {
 
   try {
     await update(orderRef, {
-      driverUid: pengemudiAktif.uid,
-      status: statusBaru,
-      updatedAt: serverTimestamp()
+      driverUid: pengemudiAktif.uid, status: statusBaru, updatedAt: serverTimestamp()
     });
 
-    // Update state lokal agar onValue berikutnya sinkron
+    // UPDATE LOKAL: Agar UI langsung berubah saat itu juga tanpa menunggu Firebase onValue
     window.pesananAktif = { ...window.pesananAktif, status: statusBaru, driverUid: pengemudiAktif.uid };
+    window.tampilkanPesananFirebase(window.pesananAktif);
+    window.updateUIStatusOrder(statusBaru);
+
     tampilkanPesan(pesanSukses || "Status diperbarui.");
   } catch (e) {
     console.error("Ubah status error:", e);
@@ -689,43 +645,23 @@ async function ubahStatusOrder(statusBaru, pesanSukses) {
   }
 }
 
-window.terimaPesananFirebase = async function () {
-  await ubahStatusOrder("ACCEPTED", "Pesanan diterima.");
-};
-
+window.terimaPesananFirebase = async function () { await ubahStatusOrder("ACCEPTED", "Pesanan diterima."); };
 window.tolakPesananFirebase = async function () {
   await ubahStatusOrder("REJECTED", "Pesanan ditolak.");
-  setTimeout(() => {
-    window.pesananAktifId = null;
-    window.pesananAktif = null;
-    resetTampilanPesanan();
-  }, 1200);
+  setTimeout(() => { window.pesananAktifId = null; window.pesananAktif = null; window.resetTampilanPesanan(); }, 1200);
 };
-
-window.mulaiPerjalananFirebase = async function () {
-  await ubahStatusOrder("TO_PICKUP", "Menuju lokasi penjemputan.");
-};
-
-window.tibaDiLokasiFirebase = async function () {
-  await ubahStatusOrder("IN_TRIP", "Perjalanan dimulai.");
-};
-
+window.mulaiPerjalananFirebase = async function () { await ubahStatusOrder("TO_PICKUP", "Menuju lokasi penjemputan."); };
+window.tibaDiLokasiFirebase = async function () { await ubahStatusOrder("IN_TRIP", "Perjalanan dimulai."); };
 window.selesaikanPerjalananFirebase = async function () {
   await ubahStatusOrder("COMPLETED", "Perjalanan selesai.");
-  setTimeout(() => {
-    window.pesananAktifId = null;
-    window.pesananAktif = null;
-    resetTampilanPesanan();
-  }, 2000);
+  setTimeout(() => { window.pesananAktifId = null; window.pesananAktif = null; window.resetTampilanPesanan(); }, 2000);
 };
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) { window.location.replace("Login-penumpang.html"); return; }
   if (user.uid === UID_PENUMPANG) { window.location.replace("NEXX-PENUMPANG.html"); return; }
   if (user.uid !== UID_PENGEMUDI) {
-    await signOut(auth);
-    window.location.replace("Login-penumpang.html");
-    return;
+    await signOut(auth); window.location.replace("Login-penumpang.html"); return;
   }
 
   pengemudiAktif = user;
@@ -733,13 +669,9 @@ onAuthStateChanged(auth, async (user) => {
   mulaiKirimLokasiDriver();
   await window.sinkronStatusOnline(false);
 
-  onDisconnect(ref(db, "driverPresence/" + user.uid)).update({
-    uid: user.uid, online: false, updatedAt: serverTimestamp()
-  });
-
+  onDisconnect(ref(db, "driverPresence/" + user.uid)).update({ uid: user.uid, online: false, updatedAt: serverTimestamp() });
   window.addEventListener("beforeunload", () => { window.sinkronStatusOnline(false); });
 });
-
 </script>
 
 </body>
