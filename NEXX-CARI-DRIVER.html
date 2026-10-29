@@ -355,6 +355,169 @@ async function ambilRuteOSRM(start, end) {
 document.getElementById("cancelButton").addEventListener("click", () => {
   const orderId = localStorage.getItem("nexxActiveOrderId");
   if (orderId && typeof window.batalkanPesananFirebase === "function") {
+<!-- SCREEN 1: MENCARI DRIVER -->
+<div class="search-screen" id="searchScreen">
+  <div class="logo">N</div>
+  <div class="title">Mencari Pengemudi</div>
+  <div class="subtitle">NEXX sedang mencari pengemudi untuk Anda</div>
+  
+  <div class="search-animation">
+    <div class="circle"></div>
+    <div class="circle"></div>
+    <div class="circle"></div>
+    <div class="search-dot"></div>
+  </div>
+
+  <div class="status-box">
+    <div class="status-main" id="statusPencarian">Menghubungkan ke server...</div>
+    <div class="status-small">Mohon tunggu, kami sedang mencarikan pengemudi terdekat.</div>
+  </div>
+
+  <button class="cancel-button" id="cancelButton">Batalkan Pesanan</button>
+</div>
+
+<!-- SCREEN 2: DRIVER DITEMUKAN -->
+<div class="driver-screen" id="driverScreen">
+  <div class="found-header">
+    <div>
+      <div class="found-title" id="mainTitle">Pengemudi Ditemukan</div>
+      <div class="found-subtitle" id="teksStatusDriver">Pengemudi sedang menuju lokasi Anda</div>
+    </div>
+    <div class="found-check" id="mainIcon">✓</div>
+  </div>
+
+  <div class="map-container">
+    <div id="map"></div>
+  </div>
+
+  <div class="driver-card">
+    <div class="driver-top">
+      <div class="driver-avatar">👤</div>
+      <div class="driver-info">
+        <div class="driver-name" id="driverName">Suhendro</div>
+        <div class="driver-rating">★ 4.9 <span>• Pengemudi NEXX</span></div>
+      </div>
+      <div class="vehicle-icon" id="vehicleIcon">🚗</div>
+    </div>
+
+    <div class="driver-divider"></div>
+
+    <div class="vehicle-info">
+      <div>
+        <span class="info-label">KENDARAAN</span>
+        <strong id="vehicleTypeText">Mobil</strong>
+      </div>
+      <div>
+        <span class="info-label">NOMOR KENDARAAN</span>
+        <strong>H 1234 NXX</strong>
+      </div>
+    </div>
+
+    <div class="driver-status" id="driverStatusBox">
+      <span class="status-dot"></span>
+      <span id="statusKeterangan">Driver dalam perjalanan menuju titik jemput</span>
+    </div>
+  </div>
+
+  <button class="contact-button">Hubungi Pengemudi</button>
+</div>
+
+<!-- SCREEN 3: SELESAI -->
+<div class="finished-screen" id="finishedScreen">
+  <div class="finished-icon">🎉</div>
+  <div class="finished-title">Perjalanan Selesai!</div>
+  <div class="finished-text">Terima kasih telah menggunakan layanan NEXX.</div>
+  <button class="finished-btn" onclick="kembaliKeAwal()">Kembali ke Beranda</button>
+</div>
+
+<!-- LEAFLET JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- SCRIPT 1: MAP, UI & RUTE PENUMPANG -->
+<script>
+let map = null;
+let markerPenumpang = null;
+let markerDriver = null;
+let ruteGlow = null;
+let ruteInti = null;
+
+let posisiPenumpang = null; 
+let posisiDriver = null;
+let ruteAsliKoordinat = [];
+
+// KUNCI PENGAMAN: Mencegah layar kembali ke radar
+let sudahDitemukan = false; 
+
+// Fungsi Pindah Layar
+function pindahLayar(id) {
+  document.getElementById("searchScreen").style.display = "none";
+  document.getElementById("driverScreen").style.display = "none";
+  document.getElementById("finishedScreen").style.display = "none";
+  document.getElementById(id).style.display = "flex";
+}
+
+// Inisialisasi Peta
+function initMap(lat, lng) {
+  if (map) return;
+  map = L.map("map").setView([lat, lng], 15);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(map);
+
+  const iconPenumpang = L.divIcon({
+    className: "",
+    html: `<div style="width:36px;height:36px;border-radius:50%;background:#ff8a00;border:3px solid white;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 15px #ff8a00;">📍</div>`,
+    iconSize: [36, 36], iconAnchor: [18, 18]
+  });
+  markerPenumpang = L.marker([lat, lng], { icon: iconPenumpang }).addTo(map).bindPopup("Titik Jemput Anda");
+  
+  setTimeout(() => { map.invalidateSize(); }, 300);
+}
+
+// Update Posisi Driver & Rute
+function updatePosisiDriver(lat, lng) {
+  posisiDriver = [lat, lng];
+  if (!map) return;
+
+  const iconDriver = L.divIcon({
+    className: "",
+    html: `<div style="width:42px;height:42px;border-radius:50%;background:#7b2ff7;border:3px solid white;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 20px 8px rgba(123,47,247,0.6);">🏍️</div>`,
+    iconSize: [42, 42], iconAnchor: [21, 21]
+  });
+
+  if (markerDriver) {
+    markerDriver.setLatLng(posisiDriver);
+  } else {
+    markerDriver = L.marker(posisiDriver, { icon: iconDriver }).addTo(map).bindPopup("Posisi Driver");
+  }
+
+  if (posisiPenumpang) {
+    ambilRuteOSRM(posisiDriver, posisiPenumpang);
+  }
+}
+
+// Ambil Rute dari OSRM
+async function ambilRuteOSRM(start, end) {
+  const url = `https://router.project-osrm.org/route/v1/driving/${start[1]},${start[0]};${end[1]},${end[0]}?overview=full&geometries=geojson`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return;
+    const data = await response.json();
+    if (!data.routes || !data.routes.length) return;
+
+    ruteAsliKoordinat = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+    
+    if (ruteGlow) map.removeLayer(ruteGlow);
+    if (ruteInti) map.removeLayer(ruteInti);
+
+    ruteGlow = L.polyline(ruteAsliKoordinat, { color: "#a855f7", weight: 20, opacity: 0.4, lineCap: "round" }).addTo(map);
+    ruteInti = L.polyline(ruteAsliKoordinat, { color: "#7B2FF7", weight: 6, opacity: 1, lineCap: "round" }).addTo(map);
+
+  } catch (e) { console.error("Gagal rute:", e); }
+}
+
+// Batalkan Pesanan
+document.getElementById("cancelButton").addEventListener("click", () => {
+  const orderId = localStorage.getItem("nexxActiveOrderId");
+  if (orderId && typeof window.batalkanPesananFirebase === "function") {
     window.batalkanPesananFirebase(orderId);
   } else {
     window.location.href = "NEXX-PENUMPANG.html";
@@ -367,6 +530,110 @@ function kembaliKeAwal() {
   window.location.href = "NEXX-PENUMPANG.html";
 }
 </script>
+
+<!-- SCRIPT 2: FIREBASE MODULE -->
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCVPNfaUs8dmsr6n4oeb9WKGAlfsZ4nVfE",
+  authDomain: "nexx-simulasi.firebaseapp.com",
+  databaseURL: "https://nexx-simulasi-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "nexx-simulasi",
+  storageBucket: "nexx-simulasi.firebasestorage.app",
+  messagingSenderId: "741542128730",
+  appId: "1:741542128730:web:d12c9246b9810216c0fc63"
+};
+
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const orderId = localStorage.getItem("nexxActiveOrderId");
+
+if (!orderId) {
+  document.getElementById("statusPencarian").textContent = "⚠️ Tidak ada pesanan aktif.";
+} else {
+  const orderRef = ref(db, "orders/" + orderId);
+
+  // PANTAU STATUS PESANAN
+  onValue(orderRef, (snapshot) => {
+    if (!snapshot.exists()) return;
+    const order = snapshot.val();
+    console.log("Status Pesanan Terbaru:", order.status); // Untuk debug
+
+    if (order.pickupLat && order.pickupLng) {
+      posisiPenumpang = [order.pickupLat, order.pickupLng];
+    }
+
+    if (order.vehicle) {
+      document.getElementById("vehicleTypeText").textContent = order.vehicle;
+      document.getElementById("vehicleIcon").textContent = order.vehicle === "BIKE" ? "🏍️" : "🚗";
+    }
+
+    // LOGIKA PERPINDAHAN LAYAR
+    if (order.status === "SEARCHING") {
+      if (!sudahDitemukan) {
+        pindahLayar("searchScreen");
+        document.getElementById("statusPencarian").textContent = "Mencari driver terdekat...";
+      }
+    } 
+    else if (order.status === "ACCEPTED" || order.status === "TO_PICKUP") {
+      sudahDitemukan = true; // Kunci layar agar tidak balik ke radar
+      
+      pindahLayar("driverScreen");
+      document.getElementById("mainTitle").textContent = "Pengemudi Ditemukan";
+      document.getElementById("teksStatusDriver").textContent = "Pengemudi sedang menuju lokasi Anda";
+      document.getElementById("statusKeterangan").textContent = "Driver dalam perjalanan menuju titik jemput";
+      
+      setTimeout(() => {
+        if (posisiPenumpang) initMap(posisiPenumpang[0], posisiPenumpang[1]);
+        if (window.pantauDriverFirebase) window.pantauDriverFirebase(order.driverUid);
+      }, 200);
+    } 
+    else if (order.status === "IN_TRIP") {
+      sudahDitemukan = true;
+      pindahLayar("driverScreen");
+      document.getElementById("mainTitle").textContent = "Dalam Perjalanan";
+      document.getElementById("teksStatusDriver").textContent = "Menuju ke titik tujuan";
+      document.getElementById("statusKeterangan").textContent = "Anda sedang dalam perjalanan bersama driver";
+    } 
+    else if (order.status === "COMPLETED" || order.status === "REJECTED" || order.status === "CANCELLED") {
+      pindahLayar("finishedScreen");
+    }
+  }, (error) => {
+    console.error("Firebase Error:", error);
+    document.getElementById("statusPencarian").textContent = "Koneksi terputus. Coba refresh.";
+  });
+
+  // PANTAU LOKASI DRIVER
+  let unsubDriver = null;
+  window.pantauDriverFirebase = function(driverUid) {
+    if (!driverUid || unsubDriver) return;
+    const driverLocRef = ref(db, "driverLocations/" + driverUid);
+    
+    unsubDriver = onValue(driverLocRef, (snap) => {
+      if (!snap.exists()) return;
+      const data = snap.val();
+      if (typeof data.lat === "number" && typeof data.lng === "number") {
+        updatePosisiDriver(data.lat, data.lng);
+      }
+    });
+  };
+
+  // BATALKAN PESANAN
+  window.batalkanPesananFirebase = async function(id) {
+    try {
+      await update(ref(db, "orders/" + id), { status: "CANCELLED" });
+      localStorage.removeItem("nexxActiveOrderId");
+      window.location.href = "NEXX-PENUMPANG.html";
+    } catch (e) {
+      console.error(e);
+      alert("Gagal membatalkan pesanan.");
+    }
+  };
+}
+</script>
+
 
 <!-- SCRIPT 2: FIREBASE MODULE -->
 <script type="module">
